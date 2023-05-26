@@ -14,7 +14,7 @@ services:
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
 
-      - --entrypoints.web.address=:8080
+      - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.websecure.address=:443
     ports:

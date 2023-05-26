@@ -1,4 +1,5 @@
 #!/bin/bash
+
 echo "Running pre start"
 # db-init
 
