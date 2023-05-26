@@ -1,0 +1,62 @@
+version: '3'
+
+services:
+
+  # web:
+  #   build:
+  #     context: ./web
+  #     target: dev
+  #   environment:
+  #     REACT_APP_HOST: ${DOMAIN:-betterstreets.localhost}
+  #   volumes:
+  #     - "./web/src:/app/src"
+  #     - "./web/public:/app/public"
+
+  traefik:
+    image: traefik:v2.6
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      # - --log.level=debug
+      - --accesslog=true
+
+      - --providers.file=true
+      - --providers.file.directory=/traefik/config
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      # - --entrypoints.web.http.middlewares=cors@file
+
+      - --entrypoints.websecure.address=:443
+      # - --entrypoints.websecure.http.middlewares=cors@file
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik:/traefik"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN:-betterstreets.localhost}`)"
+    environment:
+      DOMAIN: ${DOMAIN:-betterstreets.localhost}
+    networks: 
+      - traefik_web
+
+  
+  api:
+    build:
+      context: ./api
+      target: dev
+
+    volumes:
+      - "./api:/app"
+
+networks:
+  traefik_web:
+    external:
+      false

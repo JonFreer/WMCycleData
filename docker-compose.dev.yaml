@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+  traefik:
+    image: traefik:v2.6
+    restart: unless-stopped
+    command:
+      - --api.dashboard=true
+      - --accesslog=true
+
+      - --providers.file=true
+      - --providers.file.directory=/traefik/config
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+
+      - --entrypoints.web.address=:8080
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.websecure.address=:443
+    ports:
+      - "81:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./traefik:/traefik"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN:-cyclecounter.localhost}`)"
+    environment:
+      DOMAIN: ${DOMAIN:-cyclecounter.localhost}
+    networks: 
+      - traefik_web
+
+  
+  api:
+    build:
+      context: ./api
+      target: dev
+
+    volumes:
+      - "./api:/app"
+
+networks:
+  traefik_web:
+    external:
+      false

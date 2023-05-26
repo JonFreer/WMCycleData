@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+
+  db:
+    image: timescale/timescaledb:latest-pg15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      API_DB: "api"
+      API_DB_USER: "${API_DB_USERNAME}"
+      API_DB_PASSWORD: "${API_DB_PASSWORD}"
+    volumes:
+      - "./data/timescaledb:/var/lib/postgresql/data"
+      - ./timescale:/docker-entrypoint-initdb.d
+
+  
+    networks:
+      - traefik_web
+
+  api:
+
+    build:
+      context: ./api
+      target: prod
+    restart: unless-stopped
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cc_api.tls=true"
+      - "traefik.http.routers.cc_api.tls.certresolver=letsEncrypt"
+      -  "traefik.http.services.cc_api.loadbalancer.server.port=80"
+      - "traefik.http.routers.cc_api.rule=Host(`${DOMAIN:-cyclecounter.localhost}`) && PathPrefix(`/api`)"
+      - "traefik.http.middlewares.strip_api.stripprefix.prefixes=/api"
+      - "traefik.http.routers.cc_api.middlewares=strip_api"
+    environment:
+      DOMAIN: "${DOMAIN:-cyclecounter.localhost}"
+      DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@db/api"
+      # ADMIN_LIST: "${ADMIN_LIST}"
+      # SESSION_SECRET: "${SESSION_SECRET}"
+      # DISCORD_OAUTH_CLIENT_ID: "${DISCORD_OAUTH_CLIENT_ID}"
+      # DISCORD_OAUTH_CLIENT_SECRET: "${DISCORD_OAUTH_CLIENT_SECRET}"
+      # TWITTER_OAUTH_CLIENT_ID: "${TWITTER_OAUTH_CLIENT_ID}"
+      # TWITTER_OAUTH_CLIENT_SECRET: "${TWITTER_OAUTH_CLIENT_SECRET}"
+      # EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
+    networks:
+      - traefik_web
+
+# volumes:
+#   db_data:
