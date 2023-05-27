@@ -1,9 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set -e
+
+# psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+#     CREATE USER $API_DB_USER WITH encrypted password '$API_DB_PASSWORD';
+#     CREATE DATABASE $API_DB;
+#     GRANT ALL PRIVILEGES ON DATABASE $API_DB TO $API_DB_USER;
+#     # CREATE TABLE counters(id INT GENERATED ALWAYS AS IDENTITY, lat float, lon float, location_desc text);
+# EOSQL
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
     CREATE USER $API_DB_USER WITH encrypted password '$API_DB_PASSWORD';
     CREATE DATABASE $API_DB;
+    ALTER DATABASE $API_DB OWNER TO $API_DB_USER;
     GRANT ALL PRIVILEGES ON DATABASE $API_DB TO $API_DB_USER;
 EOSQL
