@@ -19,4 +19,8 @@ def read_counter(
     # res = crud.get_submissions(db, (limit, offset))
     # print(res[0].time)
     # return []
-    return crud.read_counters(db, (limit, offset))
+    print("STARTING GET")
+    res = crud.read_counters(db, (limit, offset))
+    print("ENDING GET")
+    print(res)
+    return res

@@ -7,7 +7,7 @@ from sqlalchemy import or_,and_
 from . import config, models
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-def read_counters(db: Session, limit_offset: Tuple[int, int]):
+def read_counters(db: Session, limit_offset: Tuple[int, int])->List[models.Counter]:
     limit, offset = limit_offset
     counters = db.query(models.Counter).offset(offset).limit(limit).all()
     return counters

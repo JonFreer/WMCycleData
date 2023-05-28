@@ -6,3 +6,6 @@ class Counter(BaseModel):
     lat:float
     lon:float
     location_desc:str
+
+    class Config:
+        orm_mode = True

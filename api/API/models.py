@@ -11,3 +11,6 @@ class Counter(Base):
     lat = Column(Float,nullable=False)
     lon = Column(Float,nullable=False)
     location_desc = Column(String,nullable=True)
+
+
+
