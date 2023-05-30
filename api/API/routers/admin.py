@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from typing import List, Union
 from sqlalchemy.orm import Session
@@ -28,7 +28,9 @@ def add_counter(
 @router.post("/add_count/", response_model=schemas.Count, tags=["admin"])
 def add_count(
     response: Response,
-    count: int,
+    count_in: int,
+    count_out:int,
+    counter:str,
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)
@@ -37,7 +39,16 @@ def add_count(
     # print(res[0].time)
     # return []
     print("STARTING GET")
-    res = crud.add_count(db, count)
+
+    try:
+        res = crud.add_count(db, counter,count_in,count_out)
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        )
+
     print("ENDING GET")
     print(res)
     return res

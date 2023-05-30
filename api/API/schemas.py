@@ -14,7 +14,9 @@ class Counter(BaseModel):
 class Count(BaseModel):
     id: int
     timestamp:datetime.datetime
-    count:int
+    counter: str
+    count_in:int
+    count_out:int
 
     class Config:
         orm_mode = True

@@ -20,8 +20,10 @@ class Counts(Base):
     __tablename__ = 'counts'
     # __table_args__ = (UniqueConstraint("msg_id", "timestamp"),)
     id = Column(Integer, primary_key=True, autoincrement=True)
+    counter = Column(String, nullable = False)
     timestamp = Column(DateTime(timezone=True), nullable=False, index=True, primary_key=True)
-    count = Column(Integer , nullable = False)
+    count_in = Column(Integer , nullable = False)
+    count_out = Column(Integer , nullable = False)
 
 event.listen(
     Counts.__table__,
