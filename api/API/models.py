@@ -18,10 +18,9 @@ class Counter(Base):
 
 class Counts(Base):
     __tablename__ = 'counts'
-    # __table_args__ = (UniqueConstraint("msg_id", "timestamp"),)
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    counter = Column(String, nullable = False)
+    counter = Column(String, nullable = False,  primary_key=True)
     timestamp = Column(DateTime(timezone=True), nullable=False, index=True, primary_key=True)
+    mode = Column(String, nullable = False, primary_key = True)
     count_in = Column(Integer , nullable = False)
     count_out = Column(Integer , nullable = False)
 

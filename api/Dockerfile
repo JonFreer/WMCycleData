@@ -10,6 +10,7 @@ RUN pip install -r requirements.txt
 RUN pip install SQLAlchemy
 RUN pip install pydantic
 RUN pip install psycopg2
+RUN pip install requests
 
 FROM prod as dev
 ENV PYTHONPATH=$PWD

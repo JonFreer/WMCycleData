@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.responses import Response
+from typing import Annotated
 from typing import List, Union
 from sqlalchemy.orm import Session
 from .. import crud, schemas
@@ -11,7 +12,7 @@ router = APIRouter()
 def read_counter(
     response: Response,
     offset: int = 0,
-    limit: int = 25,
+    limit: Annotated[int, Query(title="Limit", description="Number of count values returned")] = 25,
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)

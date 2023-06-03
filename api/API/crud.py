@@ -33,7 +33,7 @@ def create_counter(db: Session, name: str, lat: float, lon: float, location_desc
 def add_count(db: Session, counter: str, count_in: int, count_out: int) -> models.Counts:
 
     # Validate if the counter is valid
-    res = db.query(models.Counter).where(models.Counter.name==counter).all()
+    res = db.query(models.Counter).where(models.Counter.name == counter).all()
     if len(res) == 0:
         raise Exception("Counter name not valid: name not in counters table.")
 
@@ -45,6 +45,39 @@ def add_count(db: Session, counter: str, count_in: int, count_out: int) -> model
     )
 
     db.add(db_submission)
+    db.commit()
+    db.refresh(db_submission)
+
+    return db_submission
+
+
+def add_count_time(db: Session, counter: str, count_in: int, count_out: int, time: datetime.datetime, mode:str) -> models.Counts:
+    # Validate if the counter is valid
+    res = db.query(models.Counter).where(models.Counter.name == counter).all()
+    if len(res) == 0:
+        raise Exception("Counter name not valid: name not in counters table.")
+
+    # Check if key is in db
+    query = db.query(models.Counts).where(models.Counts.counter == counter) \
+        .where(models.Counts.timestamp == time) \
+        .where(models.Counts.mode == mode)
+    
+    db_submission = query.first()
+
+    if db_submission: # If value in db update
+        db_submission.count_in = count_in
+        db_submission.count_out = count_out
+        print("updating")
+    else: # If value not in db, add it to the db
+        db_submission = models.Counts(
+            timestamp=time,
+            mode = mode,
+            count_in=count_in,
+            count_out=count_out,
+            counter=counter
+        )
+        db.add(db_submission)
+
     db.commit()
     db.refresh(db_submission)
 
