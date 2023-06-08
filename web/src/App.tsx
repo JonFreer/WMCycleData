@@ -7,11 +7,13 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import Main from './components/main';
 
 function App() {
   return (
     <div className="App">
       <NavBar></NavBar>
+      <Main></Main>
       {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

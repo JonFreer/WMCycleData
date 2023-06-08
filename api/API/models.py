@@ -8,8 +8,9 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String, Float, Int
 
 class Counter(Base):
     __tablename__ = "counters"
+    identity = Column(Integer, primary_key=True, index=True)
     name = Column(
-        String, primary_key=True, index=True, default=uuid.uuid4
+        String, nullable=False
     )
     lat = Column(Float, nullable=False)
     lon = Column(Float, nullable=False)

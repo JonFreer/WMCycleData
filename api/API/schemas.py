@@ -3,6 +3,7 @@ import uuid
 import datetime
 
 class Counter(BaseModel):
+    identity:int
     name:str
     lat:float
     lon:float

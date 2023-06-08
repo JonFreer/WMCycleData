@@ -12,6 +12,7 @@ router = APIRouter()
 @router.post("/add_counter/", response_model=schemas.Counter, tags=["admin"])
 def add_counter(
     response: Response,
+    identity: int,
     name: str,
     lat: float,
     lon: float,
@@ -19,7 +20,7 @@ def add_counter(
     db: Session = Depends(get_db),
 ):
     response.headers["X-Total-Count"] = str(5)
-    return crud.create_counter(db, name,lat,lon,location_desc)
+    return crud.create_counter(db,identity, name,lat,lon,location_desc)
 
 @router.post("/add_count/", response_model=schemas.Count, tags=["admin"])
 def add_count(
@@ -64,7 +65,7 @@ def load_vivacity(response: Response,
     mode = "cyclist"
 
     for counter in counters:  
-        results = vivacity.Vivacity.get_counts(counter.name,api_key,mode)
+        results = vivacity.Vivacity.get_counts(counter.identity,api_key,mode)
         for time in results:
             crud.add_count_time(db,counter.name,results[time]["In"],results[time]["Out"],time,mode)
 

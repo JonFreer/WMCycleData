@@ -5,8 +5,8 @@ import json
 class Vivacity:
     
     # Call and return the json from the Vivacity API
-    def get_results(api_key,start_time, end_time, name,type):
-        response = requests.get("https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&latest={}&name={}&class={}&NullDataPoints=false&to=1684840206".format(api_key,start_time,end_time,name,type))
+    def get_results(api_key,start_time, end_time, identity,type):
+        response = requests.get("https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&Identity={}&class={}&NullDataPoints=false".format(api_key,start_time,identity,type))
         response.raise_for_status()
         return response.json()
     

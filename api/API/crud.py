@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, and_, cast, DateTime
+from sqlalchemy import or_, and_, cast, DateTime, text
 
 from . import config, models
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -16,9 +16,10 @@ def read_counters(db: Session, limit_offset: Tuple[int, int]) -> List[models.Cou
     return counters
 
 
-def create_counter(db: Session, name: str, lat: float, lon: float, location_desc: str) -> models.Counter:
+def create_counter(db: Session,identity:int, name: str, lat: float, lon: float, location_desc: str) -> models.Counter:
     print("Creating Counter")
     db_submission = models.Counter(
+        identity= identity,
         name=name,
         lat=lat,
         lon=lon,
@@ -84,7 +85,17 @@ def add_count_time(db: Session, counter: str, count_in: int, count_out: int, tim
     return db_submission
 
 
-def read_all_counts(db: Session, limit_offset: Tuple[int, int]) -> List[models.Counts]:
+def read_all_counts(db: Session, limit_offset: Tuple[int, int], time_interval:str) -> List[models.Counts]:
     limit, offset = limit_offset
-    counters = db.query(models.Counts).offset(offset).limit(limit).all()
-    return counters
+    # counters = db.query(models.Counts).offset(offset).limit(limit).all()
+    sql = text("""SELECT time_bucket('1 hour', timestamp) as timestamp, 
+               mode, counter ,
+               sum(count_in) as count_in, 
+               sum(count_out) as count_out 
+               
+               from counts 
+               GROUP BY 1,2,3
+               ORDER BY timestamp DESC""")
+    results = db.execute(sql).all()
+    print(results)
+    return results

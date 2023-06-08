@@ -25,10 +25,11 @@ def read_all_counts(
     response: Response,
     offset: int = 0,
     limit: int = 25,
+    time_interval:str = "1 hour",
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)
     response.headers["X-Total-Count"] = str(5)
-    res = crud.read_all_counts(db, (limit, offset))
+    res = crud.read_all_counts(db, (limit, offset),time_interval=time_interval)
     return res
 
