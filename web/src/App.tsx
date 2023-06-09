@@ -1,35 +1,52 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import NavBar from './components/navBar';
-
+import { Outlet, useOutletContext } from "react-router-dom";
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import Main from './components/main';
+import { Counter } from './types/types';
 
 function App() {
+
+  const [counters, setCounters] = useState<Counter[]>([]);
+
+  function getCounters() {
+
+    const requestOptions = {
+      method: 'GET',
+    };
+
+    fetch('/api/counters', requestOptions)
+      .then(response => {
+        console.log(response)
+        if (response.status == 200) {
+          response.json().then((data) => {
+            console.log(data)
+            setCounters(data)
+          });
+        } else {
+          console.log("/api/counters", response.text)
+        }
+      })
+  }
+
+  useEffect(() => {
+    getCounters();
+  }, [])
+
   return (
     <div className="App">
       <NavBar></NavBar>
-      <Main></Main>
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
+      <Outlet context={counters} ></Outlet>
     </div>
   );
+}
+
+export function useCounters() {
+  return useOutletContext<Counter[]>();
 }
 
 export default App;

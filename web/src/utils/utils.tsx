@@ -14,7 +14,7 @@ function data2geojson(data:Counter[]) {
             "coordinates": [data[i].lon, data[i].lat]
           }, "properties": {
             // "time": props.data[i].time,
-            "id": data[i].identity,
+            "identity": data[i].identity,
             // "state": props.data[i].state,
           }
         })

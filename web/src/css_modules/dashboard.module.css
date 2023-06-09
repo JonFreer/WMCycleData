@@ -1,5 +1,5 @@
 .main{
-    background-color: #fafbfe;
+    background-color:var(--bg-color);
     min-height: calc(100% - (50px));
     display: grid;
     grid-template-rows: 70px 400px 400px;
@@ -25,7 +25,6 @@
 }
 
 .card{
-    
     background: #fff;
     border-radius: 0.25rem;
     box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
@@ -54,6 +53,16 @@
     letter-spacing: .02em;
     font-size: .9rem;
     margin:0;
-    /* margin-top: 0.1rem; */
-    
+}
+
+.button{
+    background: var(--main-bg-color) ;
+    color:white;
+    box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5);
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 13px;
+    width: fit-content;
+    margin-top: auto;
+    font-weight: 700;
 }

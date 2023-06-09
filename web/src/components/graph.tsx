@@ -19,9 +19,10 @@ function Graph({ name }: { name: string }) {
             .then(response => {
                 console.log(response)
                 if (response.status == 200) {
-                    response.json().then((data) => {
+                    response.json().then((data:Count[]) => {
                         console.log(data)
-                        setCounts(data)
+                        let filtered = data.filter(x=> x.counter == name)
+                        setCounts(filtered)
                     });
                 } else {
                     console.log("/api/counters", response.text)
@@ -69,8 +70,8 @@ function Graph({ name }: { name: string }) {
             gradient: {
               shadeIntensity: 1,
               inverseColors: false,
-              opacityFrom: 0.5,
-              opacityTo: 0,
+              opacityFrom: 1,
+              opacityTo: 0.5,
               stops: [0, 90, 100]
             },
           },

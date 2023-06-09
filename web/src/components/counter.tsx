@@ -2,13 +2,20 @@ import { useParams } from "react-router-dom";
 import NavBar from "./navBar";
 import styles from "../css_modules/dashboard.module.css"
 import Graph from "./graph";
+import { useCounters } from "../App";
 function Counter() {
     const { idenitiy } = useParams()
+    const counters = useCounters();
 
+    const counter = counters.filter(x => x.identity == Number(idenitiy))[0]
+
+    if(counter == undefined){
+        return(<div></div>)
+    }
     console.log(idenitiy)
-    
+
+
     return (<>
-        <NavBar></NavBar>
         <div className={styles.main}>
             <div className={styles.title_box}>
                 <h4 className={styles.title}>Bristol Road Cycle Counter</h4>
@@ -30,7 +37,7 @@ function Counter() {
 
                 </div>
                 <div className={styles.cardBody}>
-                        <Graph name={"Counter Name"}></Graph>
+                        <Graph name={counter.name}></Graph>
                     </div>
             </div>
 

@@ -4,6 +4,8 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import styles from '../css_modules/map.module.css'
 import { Counter } from '../types/types';
 import { data2geojson } from '../utils/utils';
+import { useCounters } from '../App';
+import { useNavigate } from 'react-router-dom';
 // const map = new maplibregl.Map({
 //     container: 'map',
 //     style: 'https://demotiles.maplibre.org/style.json', // stylesheet location
@@ -11,8 +13,8 @@ import { data2geojson } from '../utils/utils';
 //     zoom: 9 // starting zoom
 //     });
 
-function Map({ counters }: { counters: Counter[] }) {
-
+function Map() { //{ counters }: { counters: Counter[] }
+    const counters  = useCounters();
     const map = useRef<any>(null);
     const mapContainer = useRef<any>(null);
     const [lat] = useState(52.452907468939145);
@@ -20,6 +22,7 @@ function Map({ counters }: { counters: Counter[] }) {
     const [zoom] = useState(9);
     const [API_KEY] = useState('2pdGAnnIuClGHUCta2TU');
     const forceUpdate = useReducer(x => x + 1, 0)[1]
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -59,13 +62,14 @@ function Map({ counters }: { counters: Counter[] }) {
             );
 
             console.log("Creating counters", counters.length)
+
             map.current.addSource('counters', {
                 'type': 'geojson',
-                data: data2geojson(counters),
+                data: data2geojson([]),
             });
 
             map.current.addLayer({
-                id: 'unclustered-point-1',
+                id: 'unclustered-point',
                 type: 'circle',
                 source: 'counters',
                 paint: {
@@ -76,6 +80,14 @@ function Map({ counters }: { counters: Counter[] }) {
                 }
 
             });
+
+            map.current.on('click', 'unclustered-point', function (e:any) {
+                
+                var identity = e.features[0].properties.identity;
+                console.log(e)
+                console.log(e.features)
+                navigate("/counter/"+identity, { replace: true })
+            })
 
             forceUpdate()
 
