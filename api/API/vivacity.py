@@ -39,8 +39,8 @@ class Vivacity:
 
         return out
     
-    def get_counts(name,api_key,type):
-        results = Vivacity.get_results(api_key,"today","now",name,type)
+    def get_counts(identity,api_key,type):
+        results = Vivacity.get_results(api_key,"today","now",identity,type)
         filtered_results = Vivacity.filter_results(results)
         return filtered_results
         

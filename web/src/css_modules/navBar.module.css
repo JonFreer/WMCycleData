@@ -9,8 +9,9 @@
     color:var(--main-bg-color);
     justify-content: space-between;
     user-select: none;
-    box-shadow: 0 1px 2px 0 var(--gm-fillbutton-keyshadow-color,rgba(60,64,67,.3)),0 1px 3px 1px var(--gm-fillbutton-ambientshadow-color,rgba(60,64,67,.15));
+    /* box-shadow: 0 1px 2px 0 var(--gm-fillbutton-keyshadow-color,rgba(60,64,67,.3)),0 1px 3px 1px var(--gm-fillbutton-ambientshadow-color,rgba(60,64,67,.15)); */
     z-index: 10;
+    box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
 }
 
 .title{

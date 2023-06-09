@@ -33,7 +33,7 @@ function Main() {
 
     return (
         // <div>
-            <Map></Map>
+            <Map counters={counters}></Map>
        
         // </div>
     )

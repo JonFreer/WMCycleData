@@ -1,4 +1,5 @@
 export interface Counter {
+    identity:number;
     name:string;
     lat: number;
     lon: number;

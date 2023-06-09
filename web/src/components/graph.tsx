@@ -35,7 +35,7 @@ function Graph({ name }: { name: string }) {
 
     const state = {
         series: [{
-          name: 'XYZ MOTORS',
+          name: "Users",
           data: counts.map(x => [x.timestamp,x.count_in])
         }]
     }
@@ -43,7 +43,8 @@ function Graph({ name }: { name: string }) {
           chart: {
             type: 'area',
             stacked: false,
-            height: 350,
+            // height: "100%",
+            height: "100px",
             zoom: {
               type: 'x',
               enabled: true,
@@ -59,10 +60,10 @@ function Graph({ name }: { name: string }) {
           markers: {
             size: 0,
           },
-          title: {
-            text: 'Stock Price Movement',
-            align: 'left'
-          },
+          // title: {
+          //   text: 'Stock Price Movement',
+          //   align: 'left'
+          // },
           fill: {
             type: 'gradient',
             gradient: {
@@ -76,11 +77,11 @@ function Graph({ name }: { name: string }) {
           yaxis: {
             labels: {
               formatter: function (val:any) {
-                return (val / 1000000).toFixed(0);
+                return (val ).toFixed(0);
               },
             },
             title: {
-              text: 'Price'
+              text: 'Users'
             },
           },
           xaxis: {
@@ -90,7 +91,7 @@ function Graph({ name }: { name: string }) {
             shared: false,
             y: {
               formatter: function (val:any) {
-                return (val / 1000000).toFixed(0)
+                return (val).toFixed(0)
               }
             }
           }
@@ -116,15 +117,8 @@ function Graph({ name }: { name: string }) {
     // };
 
     return (
-        <div>
-                    {/* <Chart
-                options={state}
-                // series={this.state.series}
-                type="line"
-                width="500"
-            /> */}
-            <ReactApexChart options={options} series={state.series}></ReactApexChart>
-        </div>
+
+            <ReactApexChart height={"100%"} options={options} series={state.series}></ReactApexChart>
     )
 
 

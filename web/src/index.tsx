@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import NavBar from './components/navBar';
 import About from './components/about';
+import Counter from './components/counter';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <App></App>,
     errorElement: <App />,
+  },
+  {
+    path: "counter/:idenitiy",
+    element: <Counter />,
   },
   {
     path: "/about",
