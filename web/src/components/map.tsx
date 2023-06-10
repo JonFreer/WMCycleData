@@ -6,14 +6,10 @@ import { Counter } from '../types/types';
 import { data2geojson } from '../utils/utils';
 import { useCounters } from '../App';
 import { useNavigate } from 'react-router-dom';
-// const map = new maplibregl.Map({
-//     container: 'map',
-//     style: 'https://demotiles.maplibre.org/style.json', // stylesheet location
-//     center: [-74.5, 40], // starting position [lng, lat]
-//     zoom: 9 // starting zoom
-//     });
 
-function Map() { //{ counters }: { counters: Counter[] }
+
+function Map() { 
+
     const counters  = useCounters();
     const map = useRef<any>(null);
     const mapContainer = useRef<any>(null);
@@ -25,18 +21,11 @@ function Map() { //{ counters }: { counters: Counter[] }
     const navigate = useNavigate();
 
     useEffect(() => {
-
-        console.log("COUNTERS", counters)
-        if (map.current && counters.length > 0) {// && source != undefined) {
+        if (map.current && counters.length > 0) {
             const source = map.current.getSource("counters")
             if (source != undefined) {
-                console.log("geojson")
-                console.log(data2geojson(counters))
                 source.setData(data2geojson(counters));
-            } else {
-                console.log("source undefined")
             }
-            console.log("updating data")
         }
     })
 
@@ -89,12 +78,7 @@ function Map() { //{ counters }: { counters: Counter[] }
                 navigate("/counter/"+identity, { replace: true })
             })
 
-            forceUpdate()
-
-
-
-
-
+            forceUpdate() //force update to reload the source
         })
 
     });

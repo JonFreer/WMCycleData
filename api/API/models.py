@@ -19,7 +19,7 @@ class Counter(Base):
 
 class Counts(Base):
     __tablename__ = 'counts'
-    counter = Column(String, nullable = False,  primary_key=True)
+    counter = Column(Integer, nullable = False,  primary_key=True)
     timestamp = Column(DateTime(timezone=True), nullable=False, index=True, primary_key=True)
     mode = Column(String, nullable = False, primary_key = True)
     count_in = Column(Integer , nullable = False)

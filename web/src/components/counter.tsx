@@ -18,10 +18,20 @@ function Counter() {
     return (<>
         <div className={styles.main}>
             <div className={styles.title_box}>
-                <h4 className={styles.title}>Bristol Road Cycle Counter</h4>
+                <h4 className={styles.title}>{counter.name}</h4>
             </div>
 
+
+
             <div className={styles.cardHolder}>
+
+                <div className={styles.card}>
+                    <div className={styles.cardBody}>
+                        <h5>Users today</h5>
+                        <h3>{counter.today_count}</h3>
+                    </div>
+                </div>
+
                 <div className={styles.card}>
                     <div className={styles.cardBody}>
                         <h5>Users this week</h5>
@@ -36,8 +46,8 @@ function Counter() {
                   
 
                 </div>
-                <div className={styles.cardBody}>
-                        <Graph name={counter.name}></Graph>
+                <div className={styles.cardBody} style={{"paddingTop":"0px"}}>
+                        <Graph identity={counter.identity}></Graph>
                     </div>
             </div>
 

@@ -67,6 +67,6 @@ def load_vivacity(response: Response,
     for counter in counters:  
         results = vivacity.Vivacity.get_counts(counter.identity,api_key,mode)
         for time in results:
-            crud.add_count_time(db,counter.name,results[time]["In"],results[time]["Out"],time,mode)
+            crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
 
     return Response(status_code=status.HTTP_201_CREATED)

@@ -4,7 +4,7 @@ import Chart from "react-apexcharts";
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
-function Graph({ name }: { name: string }) {
+function Graph({ identity }: { identity: number }) {
 
 
     const [counts, setCounts] = useState<Count[]>([]);
@@ -21,7 +21,7 @@ function Graph({ name }: { name: string }) {
                 if (response.status == 200) {
                     response.json().then((data:Count[]) => {
                         console.log(data)
-                        let filtered = data.filter(x=> x.counter == name)
+                        let filtered = data.filter(x=> x.counter == identity)
                         setCounts(filtered)
                     });
                 } else {
@@ -36,9 +36,14 @@ function Graph({ name }: { name: string }) {
 
     const state = {
         series: [{
-          name: "Users",
+          name: "Users In",
           data: counts.map(x => [x.timestamp,x.count_in])
-        }]
+        },
+        {
+          name: "Users Out",
+          data: counts.map(x => [x.timestamp,x.count_out])
+        }
+      ]
     }
     const options:ApexOptions = {
           chart: {
@@ -68,12 +73,12 @@ function Graph({ name }: { name: string }) {
           fill: {
             type: 'gradient',
             gradient: {
-              shadeIntensity: 1,
-              inverseColors: false,
-              opacityFrom: 1,
-              opacityTo: 0.5,
-              stops: [0, 90, 100]
-            },
+                shadeIntensity: 1,
+                inverseColors: false,
+                opacityFrom: 0.45,
+                opacityTo: 0.05,
+                stops: [20, 100, 100, 100]
+              },
           },
           yaxis: {
             labels: {
@@ -98,28 +103,9 @@ function Graph({ name }: { name: string }) {
           }
         }
       
-      
-    
-    // const state = {
-    //     options: {
-    //         chart: {
-    //             id: "basic-bar"
-    //         },
-    //         xaxis: {
-    //             categories: counts.map(x=>x.timestamp)
-    //         }
-    //     },
-    //     series: [
-    //         {
-    //             name: "series-1",
-    //             data: counts.map(x=>x.count_in)
-    //         }
-    //     ]
-    // };
-
     return (
 
-            <ReactApexChart height={"100%"} options={options} series={state.series}></ReactApexChart>
+            <ReactApexChart type={"area"} height={"100%"} options={options} series={state.series}></ReactApexChart>
     )
 
 

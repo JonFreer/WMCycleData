@@ -12,9 +12,21 @@ class Counter(BaseModel):
     class Config:
         orm_mode = True
 
+class CounterPlus(BaseModel):
+    identity:int
+    name:str
+    lat:float
+    lon:float
+    location_desc:str
+    today_count: int
+    week_count:int
+
+    class Config:
+        orm_mode = True
+
 class Count(BaseModel):
     timestamp:datetime.datetime
-    counter: str
+    counter: int
     mode:str
     count_in:int
     count_out:int

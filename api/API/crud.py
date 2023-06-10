@@ -3,7 +3,7 @@ import uuid
 
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, cast, DateTime, text
-
+from sqlalchemy import bindparam
 from . import config, models
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -52,14 +52,14 @@ def add_count(db: Session, counter: str, count_in: int, count_out: int) -> model
     return db_submission
 
 
-def add_count_time(db: Session, counter: str, count_in: int, count_out: int, time: datetime.datetime, mode:str) -> models.Counts:
+def add_count_time(db: Session, counter_identity: int, count_in: int, count_out: int, time: datetime.datetime, mode:str) -> models.Counts:
     # Validate if the counter is valid
-    res = db.query(models.Counter).where(models.Counter.name == counter).all()
+    res = db.query(models.Counter).where(models.Counter.identity == counter_identity).all()
     if len(res) == 0:
         raise Exception("Counter name not valid: name not in counters table.")
 
     # Check if key is in db
-    query = db.query(models.Counts).where(models.Counts.counter == counter) \
+    query = db.query(models.Counts).where(models.Counts.counter == counter_identity) \
         .where(models.Counts.timestamp == time) \
         .where(models.Counts.mode == mode)
     
@@ -75,7 +75,7 @@ def add_count_time(db: Session, counter: str, count_in: int, count_out: int, tim
             mode = mode,
             count_in=count_in,
             count_out=count_out,
-            counter=counter
+            counter=counter_identity
         )
         db.add(db_submission)
 
@@ -99,3 +99,32 @@ def read_all_counts(db: Session, limit_offset: Tuple[int, int], time_interval:st
     results = db.execute(sql).all()
     print(results)
     return results
+
+def read_counts(db: Session, limit_offset: Tuple[int, int], _time_interval:str,_identity:int,_start_time:int) -> List[models.Counts]:
+    limit, offset = limit_offset
+    # print(time_interval,identity,start_time)
+    # counters = db.query(models.Counts).offset(offset).limit(limit).all()
+    sql = text("""SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
+               mode, counter ,
+               sum(count_in) as count_in, 
+               sum(count_out) as count_out 
+               from counts 
+               WHERE counter = :identity AND timestamp > TIMESTAMPTZ :start_time
+               GROUP BY 1,2,3
+               ORDER BY timestamp DESC""")
+    sql = sql.bindparams(bindparam("timeInterval",value=_time_interval),
+                   bindparam("identity",value=_identity), 
+                   bindparam("start_time", value= datetime.datetime.fromtimestamp(_start_time)))
+    results = db.execute(sql).all()
+    print(results)
+    return results
+
+# def read_daily(db:Session,identity:int,start_time:int):
+#        sql = text("""SELECT time_bucket('1 day', timestamp) as timestamp, 
+#                mode, counter ,
+#                sum(count_in) as count_in, 
+#                sum(count_out) as count_out 
+#                from counts 
+#                WHERE identity = :identity  AND timestamp > TIMESTAMPTZ:start_time
+#                GROUP BY 1,2,3
+#                ORDER BY timestamp DESC""")

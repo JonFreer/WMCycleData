@@ -7,11 +7,11 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { Counter } from './types/types';
+import { Counter, CounterPlus } from './types/types';
 
 function App() {
 
-  const [counters, setCounters] = useState<Counter[]>([]);
+  const [counters, setCounters] = useState<CounterPlus[]>([]);
 
   function getCounters() {
 
@@ -19,7 +19,7 @@ function App() {
       method: 'GET',
     };
 
-    fetch('/api/counters', requestOptions)
+    fetch('/api/counters_plus', requestOptions)
       .then(response => {
         console.log(response)
         if (response.status == 200) {
@@ -46,7 +46,7 @@ function App() {
 }
 
 export function useCounters() {
-  return useOutletContext<Counter[]>();
+  return useOutletContext<CounterPlus[]>();
 }
 
 export default App;
