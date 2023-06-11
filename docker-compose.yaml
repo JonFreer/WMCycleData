@@ -28,11 +28,11 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.services.web.loadbalancer.server.port=80"
-      - "traefik.http.routers.web.tls.certresolver=letsEncrypt"
-      - "traefik.http.routers.web.service=web"
-      - "traefik.http.routers.web.rule=Host(`${DOMAIN:-cyclecounter.localhost}`)"
-      - "traefik.http.routers.web.tls=true"
+      - "traefik.http.services.cc_web.loadbalancer.server.port=80"
+      - "traefik.http.routers.cc_web.tls.certresolver=letsEncrypt"
+      # - "traefik.http.routers.cc_web.service=web"
+      - "traefik.http.routers.cc_web.rule=Host(`${DOMAIN:-cyclecounter.localhost}`)"
+      - "traefik.http.routers.cc_web.tls=true"
     networks:
       - traefik_web
 
@@ -40,7 +40,7 @@ services:
 
     build:
       context: ./api
-      target: prod
+      # target: prod
     restart: unless-stopped
     # depends_on:
     #   db:
@@ -61,6 +61,11 @@ services:
       EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
     networks:
       - traefik_web
+
+networks:
+  traefik_web:
+    external:
+      true
 
 # volumes:
 #   db_data:
