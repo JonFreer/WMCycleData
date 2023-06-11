@@ -18,10 +18,15 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
         <div className={`${dashboard_styles.cardBody} ${styles.cardHolder}`}>
             <div className={styles.cardDetails}>
                 <h4 className={styles.cardTitle}>{counter.name}</h4>
-                <h3>5000</h3>
-                <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>View Counter</a>
+                <p>{counter.location_desc}</p>
+                <div className={dashboard_styles.buttonHolder}>
+                    <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>{counter.today_count} users today</a>
+                    <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>{counter.week_count} users this week</a>
+                </div>
+                
             </div>
             <div className={styles.cardContentBG}>
+                <div className={styles.cardContentFiller}></div>
                 <div className={styles.cardContent}>
                     <p className={styles.cardContentTitle}>Users Today</p>
                     <h2 className={styles.cardContentNumber}> {counter.today_count}</h2>

@@ -21,8 +21,11 @@
 }
 
 .cardHolder{
-    display: flex;
+    display: grid;
     text-decoration: none;
+    flex-wrap: wrap-reverse;
+    grid-template-columns: auto 1fr ;
+    gap:40px;
 }
 
 .cardDetails{
@@ -31,18 +34,25 @@
 }
 
 .cardContentBG{
-    margin-left: auto;
-    background-color: #f6f7fb;
+    height: 130px;
     display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    flex-direction: row-reverse;
+    overflow: hidden;
+}
+
+.cardContentFiller{
+    height: 100%;
 }
 
 .cardContent{
-    flex: 0 0 auto;
+    /* flex: 0 0 auto; */
     min-width: 100px;
     padding:1rem;
     text-align: center;
+    background-color: #f6f7fb;
+
 }
 
 .cardContentTitle{
