@@ -34,17 +34,16 @@ function Graph({ identity }: { identity: number }) {
         getCounts();
     }, [])
 
-    const state = {
-        series: [{
+    const series:ApexAxisChartSeries= [{
           name: "Users In",
-          data: counts.map(x => [x.timestamp,x.count_in])
+          data: counts.map(x => [new Date(x.timestamp).getTime(),x.count_in])
         },
         {
           name: "Users Out",
-          data: counts.map(x => [x.timestamp,x.count_out])
+          data: counts.map(x => [new Date(x.timestamp).getTime(),x.count_out])
         }
       ]
-    }
+    
     const options:ApexOptions = {
           chart: {
             type: 'area',
@@ -105,7 +104,7 @@ function Graph({ identity }: { identity: number }) {
       
     return (
 
-            <ReactApexChart type={"area"} height={"100%"} options={options} series={state.series}></ReactApexChart>
+            <ReactApexChart type={"area"} height={"100%"} options={options} series={series}></ReactApexChart>
     )
 
 
