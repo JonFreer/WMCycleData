@@ -35,7 +35,7 @@ function Counter() {
                 <div className={styles.card}>
                     <div className={styles.cardBody}>
                         <h5>Users this week</h5>
-                        <h3>5000</h3>
+                        <h3>{counter.week_count}</h3>
                     </div>
                 </div>
             </div>

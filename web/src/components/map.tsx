@@ -78,6 +78,14 @@ function Map() {
                 navigate("/counter/"+identity, { replace: true })
             })
 
+            map.current.on("mouseenter", 'unclustered-point', () => {
+                map.current.getCanvas().style.cursor = "pointer";
+              });
+      
+            map.current.on("mouseleave", 'unclustered-point', () => {
+                        map.current.getCanvas().style.cursor = "grab";
+                    });
+
             forceUpdate() //force update to reload the source
         })
 

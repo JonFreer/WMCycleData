@@ -62,11 +62,11 @@ def load_vivacity(response: Response,
                   db: Session = Depends(get_db)):
     
     counters = crud.read_counters(db,[None,0])
-    mode = "cyclist"
-
-    for counter in counters:  
-        results = vivacity.Vivacity.get_counts(counter.identity,api_key,mode)
-        for time in results:
-            crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
+    modes = ["cyclist","escooter","rental_bicycle"]
+    for mode in modes:
+        for counter in counters:  
+            results = vivacity.Vivacity.get_counts(counter.identity,api_key,mode)
+            for time in results:
+                crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
 
     return Response(status_code=status.HTTP_201_CREATED)

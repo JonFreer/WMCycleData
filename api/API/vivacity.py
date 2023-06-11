@@ -40,7 +40,8 @@ class Vivacity:
         return out
     
     def get_counts(identity,api_key,type):
-        results = Vivacity.get_results(api_key,"today","now",identity,type)
+        time = int(datetime.datetime.now().timestamp()) - (7*24*60*60)
+        results = Vivacity.get_results(api_key,time,"now",identity,type)
         filtered_results = Vivacity.filter_results(results)
         return filtered_results
         
