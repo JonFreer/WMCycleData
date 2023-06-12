@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   db:
     image: timescale/timescaledb:latest-pg15
     restart: unless-stopped
@@ -14,8 +13,6 @@ services:
     volumes:
       - "./data/timescaledb:/var/lib/postgresql/data"
       - ./timescale:/docker-entrypoint-initdb.d
-
-  
     networks:
       - traefik_web
 
@@ -30,7 +27,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.services.cc_web.loadbalancer.server.port=80"
       - "traefik.http.routers.cc_web.tls.certresolver=letsEncrypt"
-      # - "traefik.http.routers.cc_web.service=web"
       - "traefik.http.routers.cc_web.rule=Host(`${DOMAIN:-cyclecounter.localhost}`)"
       - "traefik.http.routers.cc_web.tls=true"
     networks:
@@ -43,7 +39,7 @@ services:
       # target: prod
     restart: unless-stopped
     # depends_on:
-    #   db:
+    #   - db
     #     condition: service_healthy
     labels:
       - "traefik.enable=true"
@@ -53,6 +49,9 @@ services:
       - "traefik.http.routers.cc_api.rule=Host(`${DOMAIN:-cyclecounter.localhost}`) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.strip_api.stripprefix.prefixes=/api"
       - "traefik.http.routers.cc_api.middlewares=strip_api"
+      - "ofelia.enabled=true"
+      - "ofelia.job-exec.datecron.schedule=@every 1h"
+      - "ofelia.job-exec.datecron.command=sh schedule_scripts/hourly_load.sh"
     environment:
       DOMAIN: "${DOMAIN:-cyclecounter.localhost}"
       DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@db/api"
@@ -63,6 +62,19 @@ services:
     networks:
       - traefik_web
 
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - api    
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "./data/ofelia:/log"
+    labels:
+        ofelia.save-folder: "/log"
+        ofelia.save-only-on-error: "false"
+    #   ofelia.job-local.my-test-job.schedule: "@every 5s"
+    #   ofelia.job-local.my-test-job.command: "date"
 networks:
   traefik_web:
     external:

@@ -10,5 +10,5 @@ async def get_api_key(api_key_header: str = Security(api_key_header)):
         return api_key_header   
     else:
         raise HTTPException(
-            status_code=HTTP_403_FORBIDDEN, detail="Could not validate API KEY"
+            status_code=HTTP_403_FORBIDDEN, detail="Could not validate API KEY Key:"+api_key_header
         )

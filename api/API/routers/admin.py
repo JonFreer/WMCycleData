@@ -58,6 +58,7 @@ def add_count(
              )
 def load_vivacity(response: Response,
                   api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+                  delta_t :int = (4*60*60),
                   db: Session = Depends(get_db),
                   ):
 
@@ -65,7 +66,7 @@ def load_vivacity(response: Response,
     modes = ["cyclist","escooter","rental_bicycle"]
     for mode in modes:
         for counter in counters:  
-            results = vivacity.Vivacity.get_counts(counter.identity,config.VivacityKey,mode)
+            results = vivacity.Vivacity.get_counts(counter.identity,config.VivacityKey,mode,delta_t)
             for time in results:
                 crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
 
