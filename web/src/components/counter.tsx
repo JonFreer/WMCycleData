@@ -19,6 +19,7 @@ function Counter() {
         <div className={styles.main}>
             <div className={styles.title_box}>
                 <h4 className={styles.title}>{counter.name}</h4>
+                <span> {counter.location_desc} </span>
             </div>
 
 

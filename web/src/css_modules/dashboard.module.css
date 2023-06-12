@@ -2,7 +2,7 @@
     background-color:var(--bg-color);
     min-height: calc(100% - (50px));
     display: grid;
-    grid-template-rows: 70px 150px 400px;
+    grid-template-rows: fit-content(150px) 150px 400px;
     padding: 0px 24px;
 
     gap:20px;
@@ -10,13 +10,18 @@
 }
 
 .title{
+    margin-top: 25px;
     font-size: 18px;
     margin: 0;
-    line-height: 75px;
+    line-height: 50px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     
+}
+
+.title_box{
+    height: fit-content;
 }
 
 .cardHolder{

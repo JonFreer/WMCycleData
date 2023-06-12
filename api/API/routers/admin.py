@@ -1,17 +1,23 @@
 
 from fastapi import APIRouter, Depends, HTTPException,status
 from fastapi.responses import Response
+from fastapi.security.api_key import APIKey
+
 from typing import List, Union
 from sqlalchemy.orm import Session
+from typing import Annotated
 
 from .. import crud, schemas, vivacity
 from ..dependencies import get_db
+from .. import config
+from . import auth
 
 router = APIRouter()
 
 @router.post("/add_counter/", response_model=schemas.Counter, tags=["admin"])
 def add_counter(
     response: Response,
+    api_key: Annotated[APIKey, Depends(auth.get_api_key)],
     identity: int,
     name: str,
     lat: float,
@@ -25,18 +31,13 @@ def add_counter(
 @router.post("/add_count/", response_model=schemas.Count, tags=["admin"])
 def add_count(
     response: Response,
+    api_key: Annotated[APIKey, Depends(auth.get_api_key)],
     count_in: int,
     count_out:int,
     counter:str,
     db: Session = Depends(get_db),
 ):
-    # validate.check_limit(limit)
     response.headers["X-Total-Count"] = str(5)
-    # res = crud.get_submissions(db, (limit, offset))
-    # print(res[0].time)
-    # return []
-    print("STARTING GET")
-
     try:
         res = crud.add_count(db, counter,count_in,count_out)
     except Exception as e:
@@ -45,9 +46,7 @@ def add_count(
             status_code=400,
             detail=str(e),
         )
-
-    print("ENDING GET")
-    print(res)
+    
     return res
 
 # Request Vivacity counts and add them to the database
@@ -58,14 +57,15 @@ def add_count(
              description ="Iterate through each of the counters stored in the counters table. Request the counts for each of the counters. Store the counts in the counts table."
              )
 def load_vivacity(response: Response,
-                  api_key:str,
-                  db: Session = Depends(get_db)):
-    
+                  api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+                  db: Session = Depends(get_db),
+                  ):
+
     counters = crud.read_counters(db,[None,0])
     modes = ["cyclist","escooter","rental_bicycle"]
     for mode in modes:
         for counter in counters:  
-            results = vivacity.Vivacity.get_counts(counter.identity,api_key,mode)
+            results = vivacity.Vivacity.get_counts(counter.identity,config.VivacityKey,mode)
             for time in results:
                 crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
 

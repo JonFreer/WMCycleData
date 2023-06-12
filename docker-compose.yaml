@@ -58,6 +58,7 @@ services:
       DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@db/api"
       # ADMIN_LIST: "${ADMIN_LIST}"
       SESSION_SECRET: "${SESSION_SECRET}"
+      VIVACITY_KEY: "${VIVACITY_KEY}"
       EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
     networks:
       - traefik_web

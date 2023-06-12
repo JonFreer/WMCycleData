@@ -17,6 +17,3 @@ app.include_router(admin.router)
 # openapi_schema = get_openapi(title="BadlyParked",version="1.0.0",routes=app.routes,description="This is a very custom OpenAPI schema")
 # app.openapi_schema = openapi_schema
 # app.openapi = app.openapi_schema
-# app.include_router(uploads.router)
-# app.include_router(report.router)
-# app.include_router(crossings.router)
