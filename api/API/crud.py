@@ -100,7 +100,7 @@ def read_all_counts(db: Session, limit_offset: Tuple[int, int], time_interval:st
     print(results)
     return results
 
-def read_counts(db: Session, limit_offset: Tuple[int, int], _time_interval:str,_identity:int,_start_time:int) -> List[models.Counts]:
+def read_counts(db: Session, limit_offset: Tuple[int, int], time_interval:str,identity:int,start_time:int) -> List[models.Counts]:
     limit, offset = limit_offset
     # print(time_interval,identity,start_time)
     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
@@ -112,9 +112,9 @@ def read_counts(db: Session, limit_offset: Tuple[int, int], _time_interval:str,_
                WHERE counter = :identity AND timestamp > TIMESTAMPTZ :start_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC""")
-    sql = sql.bindparams(bindparam("timeInterval",value=_time_interval),
-                   bindparam("identity",value=_identity), 
-                   bindparam("start_time", value= datetime.datetime.fromtimestamp(_start_time)))
+    sql = sql.bindparams(bindparam("timeInterval",value=time_interval),
+                   bindparam("identity",value=identity), 
+                   bindparam("start_time", value= datetime.datetime.fromtimestamp(start_time)))
     results = db.execute(sql).all()
     print(results)
     return results

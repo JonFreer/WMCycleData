@@ -1,0 +1,16 @@
+.main{
+    float: right;
+    border: none;
+    background: var(--main-bg-color) ;
+    color:white;
+    box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5);
+    padding: 8px;
+    border-radius: 3px;
+    font-size: 13px;
+    width: fit-content;
+    font-weight: 700;
+    top:-5px;
+    position: relative;
+    z-index: 100;
+    margin-left:10px;
+}

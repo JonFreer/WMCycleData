@@ -4,7 +4,7 @@ function About() {
     return (
         <>
             <h1 className={styles.title}>WM Cycle Data</h1>
-            <h2 className={styles.subtitle}>Subtitle</h2>
+            {/* <h2 className={styles.subtitle}>Subtitle</h2> */}
             <div className={styles.about_box_holder}>
 
                 <div className={styles.about_box}>
