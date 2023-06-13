@@ -2,6 +2,7 @@ version: '3'
 
 services:
   db:
+    container_name: cc_db
     image: timescale/timescaledb:latest-pg15
     restart: unless-stopped
     environment:
@@ -54,7 +55,7 @@ services:
       - "ofelia.job-exec.datecron.command=sh schedule_scripts/hourly_load.sh"
     environment:
       DOMAIN: "${DOMAIN:-cyclecounter.localhost}"
-      DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@db/api"
+      DATABASE_URL: "postgresql://${API_DB_USERNAME}:${API_DB_PASSWORD}@cc_db/api"
       SESSION_SECRET: "${SESSION_SECRET}"
       VIVACITY_KEY: "${VIVACITY_KEY}"
       EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
