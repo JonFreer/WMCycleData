@@ -3,7 +3,8 @@ version: '3'
 services:
   db:
     container_name: cc_db
-    image: timescale/timescaledb:latest-pg15
+    # image: timescale/timescaledb:latest-pg15
+    build: ./timescale
     restart: unless-stopped
     environment:
       POSTGRES_USER: "${DB_USERNAME}"
@@ -39,9 +40,9 @@ services:
       context: ./api
       # target: prod
     restart: unless-stopped
-    # depends_on:
-    #   - db
-    #     condition: service_healthy
+    depends_on:
+      db:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.cc_api.tls=true"

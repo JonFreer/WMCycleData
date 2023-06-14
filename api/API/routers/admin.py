@@ -1,5 +1,5 @@
 
-from fastapi import APIRouter, Depends, HTTPException,status
+from fastapi import APIRouter, Depends, HTTPException,status,Query
 from fastapi.responses import Response
 from fastapi.security.api_key import APIKey
 
@@ -58,12 +58,19 @@ def add_count(
              )
 def load_vivacity(response: Response,
                   api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+                  identity: Annotated[int | None , Query(title="Identity", description="Optional. Leave blank to load data for all counters")] = None,
                   delta_t :int = (4*60*60),
                   db: Session = Depends(get_db),
                   ):
+    
 
     counters = crud.read_counters(db,[None,0])
+
+    if (identity != None):
+        counters = list(filter(lambda x: (x.identity==identity), counters))
+
     modes = ["cyclist","escooter","rental_bicycle"]
+
     for mode in modes:
         for counter in counters:  
             results = vivacity.Vivacity.get_counts(counter.identity,config.VivacityKey,mode,delta_t)
@@ -71,3 +78,4 @@ def load_vivacity(response: Response,
                 crud.add_count_time(db,counter.identity,results[time]["In"],results[time]["Out"],time,mode)
 
     return Response(status_code=status.HTTP_201_CREATED)
+
