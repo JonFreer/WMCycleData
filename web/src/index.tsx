@@ -13,6 +13,7 @@ import {
 import About from './pages/about';
 import Counter from './components/counter';
 import Counters from './pages/counters';
+import Main from './pages/main';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Map />,
+        element: <Main />,
       },
       {
         path: "/counter",
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
       },
       {
         path: "*",
-        element: <Map />,
+        element: <Main />,
       },
     ],
   },

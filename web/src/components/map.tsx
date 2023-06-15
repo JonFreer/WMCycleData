@@ -8,18 +8,20 @@ import { useCounters } from '../App';
 import { useNavigate } from 'react-router-dom';
 
 
-function Map() { 
+function Map({ identity }: { identity: number | undefined }) {
 
-    const counters  = useCounters();
+    const counters = useCounters();
     const map = useRef<any>(null);
     const mapContainer = useRef<any>(null);
     const [lat] = useState(52.452907468939145);
     const [lng] = useState(-1.727910517089181);
     const [zoom] = useState(9);
     const [API_KEY] = useState('2pdGAnnIuClGHUCta2TU');
+
     const forceUpdate = useReducer(x => x + 1, 0)[1]
     const navigate = useNavigate();
-
+    const [marker,setMarker] = useState<any>();
+    
     useEffect(() => {
         if (map.current && counters.length > 0) {
             const source = map.current.getSource("counters")
@@ -29,7 +31,37 @@ function Map() {
         }
     })
 
+
+    useEffect(() =>{
+            if(marker!=undefined){
+                var counter = counters.filter(x=>x.identity==identity)[0];
+                // map.current.remove(marker);
+                (marker as maplibregl.Marker).setLngLat([counter.lon, counter.lat]);
+                (map.current as maplibregl.Map).setCenter([counter.lon, counter.lat]);
+                (map.current as maplibregl.Map).setZoom(16);
+
+                (map.current as maplibregl.Map).removeLayer("unclustered-point");
+
+                map.current.addLayer({
+                    id: 'unclustered-point',
+                    type: 'circle',
+                    source: 'counters',
+                    filter: ['!=', 'identity', Number(identity)],
+                    paint: {
+                        'circle-color': '#3291fc',
+                        'circle-radius': 10,
+                        'circle-stroke-width': 4,
+                        'circle-stroke-color': '#3291fc50'
+                    }
+                });
+
+            }
+    },[identity]);
+
+
     useEffect(() => {
+        // map.current==null;
+
         if (map.current) return; //stops map from intializing more than once
 
         map.current = new maplibregl.Map({
@@ -40,7 +72,6 @@ function Map() {
         });
 
         map.current.on('load', function () {
-
             map.current.addControl(
                 new maplibregl.GeolocateControl({
                     positionOptions: {
@@ -61,6 +92,7 @@ function Map() {
                 id: 'unclustered-point',
                 type: 'circle',
                 source: 'counters',
+                filter: ['!=', 'identity', Number(identity)],
                 paint: {
                     'circle-color': '#3291fc',
                     'circle-radius': 10,
@@ -70,21 +102,40 @@ function Map() {
 
             });
 
-            map.current.on('click', 'unclustered-point', function (e:any) {
-                
+            if (identity != undefined) {
+
+                var counter = counters.filter(x=>x.identity==identity)[0]
+
+                var marker = new maplibregl.Marker({
+                    color: "#FF3333",
+                    draggable: false
+                }).setLngLat([counter.lon, counter.lat])
+                    .addTo(map.current);
+
+                setMarker(marker);
+
+                (map.current as maplibregl.Map).setCenter([counter.lon, counter.lat]);
+                (map.current as maplibregl.Map).setZoom(16)
+
+
+            }
+
+            
+
+            map.current.on('click', 'unclustered-point', function (e: any) {
                 var identity = e.features[0].properties.identity;
                 console.log(e)
                 console.log(e.features)
-                navigate("/counter/"+identity, { replace: true })
+                navigate("/counter/" + identity)
             })
 
             map.current.on("mouseenter", 'unclustered-point', () => {
                 map.current.getCanvas().style.cursor = "pointer";
-              });
-      
+            });
+
             map.current.on("mouseleave", 'unclustered-point', () => {
-                        map.current.getCanvas().style.cursor = "grab";
-                    });
+                map.current.getCanvas().style.cursor = "grab";
+            });
 
             forceUpdate() //force update to reload the source
         })

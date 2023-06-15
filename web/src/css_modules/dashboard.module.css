@@ -2,9 +2,9 @@
     background-color:var(--bg-color);
     min-height: calc(100% - (50px));
     display: grid;
-    grid-template-rows: fit-content(150px) 150px 400px;
+    grid-template-rows: fit-content(150px) 150px 400px 400px;
     padding: 0px 24px;
-
+    margin-bottom: 20px;
     gap:20px;
     color:var(--heading-color);
 }
@@ -78,5 +78,9 @@
 
 .buttonHolder{
     margin-top: auto;
+}
 
+.map_holder{
+    height:400px;
+    overflow: hidden;
 }

@@ -14,6 +14,7 @@ export interface CounterPlus {
     location_desc:string;
     today_count:number;
     week_count:number;
+    yesterday_count:number;
 }
 
 export interface Count{

@@ -28,8 +28,8 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
             <div className={styles.cardContentBG}>
                 <div className={styles.cardContentFiller}></div>
                 <div className={styles.cardContent}>
-                    <p className={styles.cardContentTitle}>Users Today</p>
-                    <h2 className={styles.cardContentNumber}> {counter.today_count}</h2>
+                    <p className={styles.cardContentTitle}>Users Yesterday</p>
+                    <h2 className={styles.cardContentNumber}> {counter.yesterday_count}</h2>
                 </div>
                 <div className={styles.cardContent}>
                     <p className={styles.cardContentTitle}>Weekly Users</p>

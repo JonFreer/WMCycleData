@@ -8,6 +8,8 @@ from ..dependencies import get_db
 import datetime
 router = APIRouter()
 
+DAY_SECONDS = 86400
+
 @router.get("/counters/", response_model=List[schemas.Counter], tags=["counters"])
 def read_counter(
     response: Response,
@@ -50,18 +52,24 @@ def read_counter(
     counters = crud.read_counters(db, (limit, offset))
     response = []
     for counter in counters:
-        
-        today_res = crud.read_counts(db, (None, 0),time_interval="1 day",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-86400))
-
         today = 0
+        yesterday = 0
+        week_count = 0
+
+        today_res = crud.read_counts(db, (None, 0),time_interval="1 day",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*2))
+        week_res = crud.read_counts(db, (None, 0),time_interval="1 week",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*7))
+
+
         if(len(today_res) > 0):
             today= today_res[0].count_in + today_res[0].count_out
-
-        week_res = crud.read_counts(db, (None, 0),time_interval="1 week",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-86400*7))
-
-        week_count = 0
+       
+        if(len(today_res) > 1):
+            yesterday= today_res[1].count_in + today_res[1].count_out
+        
         if(len(week_res) > 0):
             week_count= week_res[0].count_in + week_res[0].count_out
+
+
 
         response.append(
             schemas.CounterPlus(
@@ -71,7 +79,8 @@ def read_counter(
                 lon = counter.lon,
                 location_desc = counter.location_desc,
                 today_count = today,
-                week_count = week_count
+                week_count = week_count,
+                yesterday_count = yesterday
             )
         )
     return response

@@ -42,7 +42,7 @@ function Graph(
 
   useEffect(() => {
     getCounts();
-  }, [style, time_interval])
+  }, [style, time_interval,identity])
 
   const series: ApexAxisChartSeries = [{
     name: "Users In",

@@ -9,12 +9,12 @@ all: up
 
 .PHONY: up down build pull logs
 up:
-	docker-compose $(FILES) up
+	docker compose $(FILES) up
 down:
-	docker-compose $(FILES) down --remove-orphans
+	docker compose $(FILES) down --remove-orphans
 build:
-	docker-compose $(FILES) build
+	docker compose $(FILES) build
 pull:
-	docker-compose $(FILES) pull
+	docker compose $(FILES) pull
 logs:
-	docker-compose $(FILES) logs
+	docker compose $(FILES) logs
