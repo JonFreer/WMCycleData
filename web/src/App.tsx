@@ -23,8 +23,9 @@ function App() {
       .then(response => {
         console.log(response)
         if (response.status == 200) {
-          response.json().then((data) => {
+          response.json().then((data: CounterPlus[]) => {
             console.log(data)
+            data = data.sort((a,b) => b.week_count - a.week_count); 
             setCounters(data)
           });
         } else {

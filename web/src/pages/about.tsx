@@ -1,11 +1,36 @@
 import styles from '../css_modules/about.module.css'
-
+import dash_styles from '../css_modules/dashboard.module.css'
 function About() {
     return (
         <>
             <h1 className={styles.title}>WM Cycle Data</h1>
             {/* <h2 className={styles.subtitle}>Subtitle</h2> */}
             <div className={styles.about_box_holder}>
+
+                <div className={styles.about_box}>
+                    <a className={styles.about_box_a}>
+                        <div>
+                            <p className={styles.about_box_paragraph} >
+                                Welcome to WMCycleData.com, a website dedicated to presenting comprehensive cycling figures for the West Midlands!
+                                We are passionate about promoting cycling as a sustainable and healthy mode of transportation,
+                                and we believe that access to accurate and up-to-date statistics is key to making informed decisions
+                                and driving positive change.
+                            </p>
+                            <p className={styles.about_box_paragraph} >
+                                Our website serves as a hub of information, providing an in-depth analysis of cycling trends, patterns,
+                                and insights specific to the West Midlands region.
+                                Whether you're a cyclist, a policymaker, a transportation enthusiast,
+                                or simply curious about the state of cycling in this area,
+                                our platform is designed to meet your needs.
+                            </p>
+
+                            <p className={styles.about_box_paragraph} >
+                            Join us on this journey as we unveil the story of cycling in the West Midlands, one statistic at a time.
+                            </p>
+                        </div>
+
+                    </a>
+                </div>
 
                 <div className={styles.about_box}>
                     <a className={styles.about_box_a}>

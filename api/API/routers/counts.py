@@ -59,6 +59,8 @@ def read_counter(
         today_res = crud.read_counts(db, (None, 0),time_interval="1 day",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*2))
         week_res = crud.read_counts(db, (None, 0),time_interval="1 week",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*7))
 
+        today_res = list(filter(lambda x: (x.mode == "cyclist"), today_res)) 
+        week_res = list(filter(lambda x: (x.mode == "cyclist"), week_res)) 
 
         if(len(today_res) > 0):
             today= today_res[0].count_in + today_res[0].count_out
@@ -68,8 +70,6 @@ def read_counter(
         
         if(len(week_res) > 0):
             week_count= week_res[0].count_in + week_res[0].count_out
-
-
 
         response.append(
             schemas.CounterPlus(

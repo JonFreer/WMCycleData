@@ -26,7 +26,7 @@ function Graph(
         if (response.status == 200) {
           response.json().then((data: Count[]) => {
             console.log(data)
-            let filtered = data.filter(x => x.counter == identity)
+            let filtered = data.filter(x => x.counter == identity && x.mode == "cyclist")
             setCounts(filtered)
           });
         } else {

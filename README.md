@@ -15,9 +15,6 @@ This project aims to create an Web App and API to display and make available the
 
       cp example.env .env
 
-  <!-- You *will* need to fill in any missing fields, such as the OAuth scope stuff
-  for both Twitter and Discord. -->
-
 - Download and build docker image dependencies:
 
       INFRA=dev make pull
@@ -29,3 +26,7 @@ This project aims to create an Web App and API to display and make available the
       
 The infrastructure should now be running at `cyclecounter.localhost`, make sure that
 this resolves to `127.0.0.1`!
+
+# Deployment
+
+- Add the DOMAIN environment variable to the .env file and set to your desired domain
