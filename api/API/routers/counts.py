@@ -41,10 +41,10 @@ def read_all_counts(
 
 #Returns all the counters plus key stats
 @router.get("/counters_plus/", response_model=List[schemas.CounterPlus], tags=["counters"])
-def read_counter(
+def read_counter_plus(
     response: Response,
     offset: int = 0,
-    limit: Annotated[int, Query(title="Limit", description="Number of count values returned")] = 25,
+    limit: Annotated[int|None, Query(title="Limit", description="Optional: Number of count values returned")] = None,
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)
@@ -86,7 +86,7 @@ def read_counter(
     return response
 
 @router.get("/today/", response_model=List[schemas.Count], tags=["counters"])
-def read_all_counts(
+def read_today(
     response: Response,
     identity: int,
     # start_time:int = dat,
