@@ -118,13 +118,3 @@ def read_counts(db: Session, limit_offset: Tuple[int, int], time_interval:str,id
     results = db.execute(sql).all()
     print(results)
     return results
-
-# def read_daily(db:Session,identity:int,start_time:int):
-#        sql = text("""SELECT time_bucket('1 day', timestamp) as timestamp, 
-#                mode, counter ,
-#                sum(count_in) as count_in, 
-#                sum(count_out) as count_out 
-#                from counts 
-#                WHERE identity = :identity  AND timestamp > TIMESTAMPTZ:start_time
-#                GROUP BY 1,2,3
-#                ORDER BY timestamp DESC""")

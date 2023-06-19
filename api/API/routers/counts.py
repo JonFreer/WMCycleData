@@ -57,7 +57,7 @@ def read_counter_plus(
         week_count = 0
 
         today_res = crud.read_counts(db, (None, 0),time_interval="1 day",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*2))
-        week_res = crud.read_counts(db, (None, 0),time_interval="1 week",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*7))
+        week_res = crud.read_counts(db, (None, 0),time_interval="1 week",identity=counter.identity,start_time=int(datetime.datetime.now().timestamp()-DAY_SECONDS*14))
 
         today_res = list(filter(lambda x: (x.mode == "cyclist"), today_res)) 
         week_res = list(filter(lambda x: (x.mode == "cyclist"), week_res)) 
@@ -68,8 +68,8 @@ def read_counter_plus(
         if(len(today_res) > 1):
             yesterday= today_res[1].count_in + today_res[1].count_out
         
-        if(len(week_res) > 0):
-            week_count= week_res[0].count_in + week_res[0].count_out
+        if(len(week_res) > 1):
+            week_count= week_res[1].count_in + week_res[1].count_out
 
         response.append(
             schemas.CounterPlus(
@@ -89,10 +89,6 @@ def read_counter_plus(
 def read_today(
     response: Response,
     identity: int,
-    # start_time:int = dat,
-    # offset: int = 0,
-    # limit: int = 25,
-    # time_interval:str = "1 hour",
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)

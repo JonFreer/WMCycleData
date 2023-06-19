@@ -14,6 +14,3 @@ app.add_middleware(SessionMiddleware, secret_key=config.SessionSecret)
 
 app.include_router(counts.router)
 app.include_router(admin.router)
-# openapi_schema = get_openapi(title="BadlyParked",version="1.0.0",routes=app.routes,description="This is a very custom OpenAPI schema")
-# app.openapi_schema = openapi_schema
-# app.openapi = app.openapi_schema

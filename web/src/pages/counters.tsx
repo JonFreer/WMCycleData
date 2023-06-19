@@ -21,7 +21,7 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
                 <p>{counter.location_desc}</p>
                 <div className={dashboard_styles.buttonHolder}>
                     <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>{counter.today_count} users today</a>
-                    <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>{counter.week_count} users this week</a>
+                    <a className={dashboard_styles.button} href={"/counter/"+counter.identity}>{counter.week_count} users last week</a>
                 </div>
                 
             </div>
