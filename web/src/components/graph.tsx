@@ -5,10 +5,12 @@ import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
 function Graph(
-  { identity, time_interval, style }: 
+  { identity, time_interval, style, start_date, end_date }: 
   { identity: number, 
-    time_interval: string, 
-    style: "bar" | "area" }) {
+    time_interval: string,
+    style: "bar" | "area",
+    start_date: Date,
+    end_date: Date }) {
 
 
   const [counts, setCounts] = useState<Count[]>([]);
@@ -97,6 +99,8 @@ function Graph(
     },
     xaxis: {
       type: 'datetime',
+      min: start_date.getTime(),
+      max: end_date.getTime()
     },
     tooltip: {
       shared: false,

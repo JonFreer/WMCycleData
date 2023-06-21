@@ -61,18 +61,21 @@ function Counter() {
             </div>
 
             <GraphHolder
+                type={"day"}
                 default_chart_style={"area"}
                 default_time_interval={"1 hour"}
                 title={"Daily Overview"}
                 identity={counter.identity}></GraphHolder>
 
             <GraphHolder
+                type={"week"}
                 default_chart_style={"bar"}
                 default_time_interval={"1 day"}
                 title={"Weekly Overview"}
                 identity={counter.identity}></GraphHolder>
 
             <GraphHolder
+                type={"month"}
                 default_chart_style={"bar"}
                 default_time_interval={"1 week"}
                 title={"Week by Week Overview"}
@@ -92,35 +95,140 @@ function GraphHolder({
     identity,
     title,
     default_time_interval,
-    default_chart_style }:
+    default_chart_style,
+    type }:
     {
         identity: number,
         title: string,
         default_time_interval: string,
-        default_chart_style: "bar" | "area"
+        default_chart_style: "bar" | "area",
+        type: "week" | "day" | "month"
     }) {
 
+
+    const [date_selected, set_date_selected] = useState<string>("default");
     const [time_interval, set_time_interval] = useState<string>(default_time_interval);
     const [chart_style, set_chart_style] = useState<"bar" | "area">(default_chart_style);
+
+    var end_date = new Date()
+    var start_date = new Date()
+    start_date.setDate(start_date.getDate() - 7)
+
+    if (type == "day") {
+        if (date_selected == "today") {
+            end_date = new Date()
+            start_date = new Date(new Date().setHours(0, 0, 0, 0))
+        } else if (date_selected == "default") {
+            end_date = new Date(new Date().setHours(0, 0, 0, 0))
+            start_date = new Date();
+            start_date.setDate(new Date().getDate() - 1) //.setHours(0,0,0,0))
+            start_date.setHours(0, 0, 0, 0)
+        } else {
+            end_date = new Date(date_selected)
+            end_date.setHours(23, 59, 0, 0)
+            start_date = new Date(date_selected)
+            start_date.setHours(0, 0, 0, 0)
+        }
+    }
+
+    if (type == "week") {
+        if (date_selected == "week_to_date") {
+            end_date = new Date()
+            start_date = new Date()
+            const today = start_date.getDate();
+            const currentDay = start_date.getDay();
+            start_date.setDate(today - (currentDay || 7));
+            start_date.setHours(0, 0, 0, 0);
+        } else if (date_selected == "default") { //last week
+            end_date = new Date()
+            const today = end_date.getDate();
+            const currentDay = end_date.getDay();
+            end_date.setDate(today - (currentDay || 7));
+            end_date.setHours(0, 0, 0, 0);
+            start_date = new Date(new Date().setDate(end_date.getDate() - 7))
+        }
+
+
+    }
+
 
     return (
         <div className={styles.card}>
             <div className={styles.cardHeader}>
                 <span className={styles.headerTitle}>{title}</span>
-                <TimeSelect id={time_interval} setter={set_time_interval}></TimeSelect>
-                <StyleSelect id={chart_style} setter={set_chart_style}></StyleSelect>
 
+                <div className={dropdown_style.options_holder}>
+                    <DateSelectorDaily type={type} id={date_selected} setter={set_date_selected}></DateSelectorDaily>
+                    <TimeSelect id={time_interval} setter={set_time_interval}></TimeSelect>
+                    <StyleSelect id={chart_style} setter={set_chart_style}></StyleSelect>
+                </div>
             </div>
             <div className={styles.cardBody} style={{ "paddingTop": "0px" }}>
-                <Graph style={chart_style} time_interval={time_interval} identity={identity}></Graph>
+                <Graph start_date={start_date} end_date={end_date} style={chart_style} time_interval={time_interval} identity={identity}></Graph>
             </div>
         </div>
     )
 }
 
+function DateSelectorDaily({ id, setter, type }: { id: string, setter: any, type: string }) {
+
+    const [custom_date, set_custom_date] = useState<Date | null>(null);
+
+    if (type == "day") {
+        return (
+            <div className={dropdown_style.multi_button_holder}>
+
+                <div onClick={() => setter((document.getElementById("start") as HTMLInputElement).value)} className={id != "today" && id != "default" ?
+                    `${dropdown_style.multi_button}  ${dropdown_style.picker} ${dropdown_style.left} ${dropdown_style.active}` :
+                    `${dropdown_style.multi_button} ${dropdown_style.picker} ${dropdown_style.left}`}>
+                    {/* {custom_date == null ? "Custom" : "Date Set"} */}
+                    <input onChange={x => setter(x.target.value)} className={dropdown_style.input} type="date" id="start" name="start"
+                    ></input>
+                </div>
+
+                <div onClick={() => setter("default")}
+                    className={id == "default" ?
+                        `${dropdown_style.multi_button} ${dropdown_style.active}` :
+                        `${dropdown_style.multi_button}`}>Yesterday</div>
+
+                <div onClick={() => setter("today")}
+                    className={id == "today" ?
+                        `${dropdown_style.multi_button} ${dropdown_style.right} ${dropdown_style.active}` :
+                        `${dropdown_style.multi_button} ${dropdown_style.right}`}>Today</div>
+            </div>
+        )
+    }
+
+    if (type == "week") {
+        return (
+            <div className={dropdown_style.multi_button_holder}>
+
+                <div onClick={() => setter((document.getElementById("start") as HTMLInputElement).value)} className={id != "week_to_date" && id != "default" ?
+                    `${dropdown_style.multi_button}  ${dropdown_style.picker} ${dropdown_style.left} ${dropdown_style.active}` :
+                    `${dropdown_style.multi_button} ${dropdown_style.picker} ${dropdown_style.left}`}>
+                    {/* {custom_date == null ? "Custom" : "Date Set"} */}
+                    <input onChange={x => setter(x.target.value)} className={dropdown_style.input} type="week" id="start" name="start"
+                    ></input>
+                </div>
+
+                <div onClick={() => setter("default")}
+                    className={id == "default" ?
+                        `${dropdown_style.multi_button} ${dropdown_style.active}` :
+                        `${dropdown_style.multi_button}`}>Last Week</div>
+
+                <div onClick={() => setter("week_to_date")}
+                    className={id == "week_to_date" ?
+                        `${dropdown_style.multi_button} ${dropdown_style.right} ${dropdown_style.active}` :
+                        `${dropdown_style.multi_button} ${dropdown_style.right}`}>Week to Date</div>
+            </div>
+        )
+    }
+    return (<div></div>)
+}
+
 function TimeSelect({ id, setter }: { id: string, setter: any }) {
     return (
-        <select onChange={(x) => setter(x.target.value)} defaultValue={id} className={dropdown_style.main} name="time_select" id="time_select">
+        <select style={{ marginLeft: "auto" }} onChange={(x) => setter(x.target.value)} defaultValue={id} className={dropdown_style.main} name="time_select" id="time_select">
             <option value="1 hour">Hourly</option>
             <option value="1 day">Daily</option>
             <option value="1 week">Weekly</option>
