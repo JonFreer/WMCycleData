@@ -20,6 +20,7 @@ class CounterPlus(BaseModel):
     location_desc:str
     today_count: int
     week_count:int
+    last_week_count:int
     yesterday_count:int
 
     class Config:

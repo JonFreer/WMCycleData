@@ -16,7 +16,7 @@ services:
       - "./data/timescaledb:/var/lib/postgresql/data"
       - ./timescale:/docker-entrypoint-initdb.d
     networks:
-      - traefik_web
+      - internal_network
 
   web:
     build:
@@ -62,6 +62,7 @@ services:
       EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
     networks:
       - traefik_web
+      - internal_network
 
   ofelia:
     image: mcuadros/ofelia:latest
@@ -79,6 +80,8 @@ networks:
   traefik_web:
     external:
       true
+  internal_network:
+    internal: true
 
 # volumes:
 #   db_data:
