@@ -1,66 +1,65 @@
-.main{
-    display: flexbox;
-    background-color: var(--bg-color);
-    min-height: calc(100% - (50px));
-    padding: 24px 24px;
-    color:var(--heading-color);
-    gap:20px;
+.main {
+  display: flexbox;
+  background-color: var(--bg-color);
+  min-height: calc(100% - (50px));
+  padding: 24px 24px;
+  color: var(--heading-color);
+  gap: 20px;
 }
 
-.cardGap{
-    margin-bottom: 24px;
+.cardGap {
+  margin-bottom: 24px;
 }
 
-.cardTitle{
-    font-size: 18px;
-    margin: 0;
-    /* line-height: 75px; */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.cardTitle {
+  font-size: 18px;
+  margin: 0;
+  /* line-height: 75px; */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.cardHolder{
-    display: grid;
-    text-decoration: none;
-    flex-wrap: wrap-reverse;
-    grid-template-columns: auto 1fr ;
-    gap:40px;
+.cardHolder {
+  display: grid;
+  text-decoration: none;
+  flex-wrap: wrap-reverse;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
 }
 
-.cardDetails{
-    display:flex;
-    flex-direction: column;
+.cardDetails {
+  display: flex;
+  flex-direction: column;
 }
 
-.cardContentBG{
-    height: 130px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap-reverse;
-    flex-direction: row-reverse;
-    overflow: hidden;
+.cardContentBG {
+  height: 130px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  flex-direction: row-reverse;
+  overflow: hidden;
 }
 
-.cardContentFiller{
-    height: 100%;
+.cardContentFiller {
+  height: 100%;
 }
 
-.cardContent{
-    /* flex: 0 0 auto; */
-    min-width: 100px;
-    padding:1rem;
-    text-align: center;
-    background-color: #f6f7fb;
-
+.cardContent {
+  /* flex: 0 0 auto; */
+  min-width: 100px;
+  padding: 1rem;
+  text-align: center;
+  background-color: #f6f7fb;
 }
 
-.cardContentTitle{
-    color:var(--heading-secondary-color);
-    font-size: 13px;
-    font-weight: 700;
+.cardContentTitle {
+  color: var(--heading-secondary-color);
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.cardContentNumber{
-    font-weight: 700;
+.cardContentNumber {
+  font-weight: 700;
 }

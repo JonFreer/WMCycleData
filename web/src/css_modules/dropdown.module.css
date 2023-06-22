@@ -1,66 +1,65 @@
-.main{
-    float: right;
-    border: none;
-    background: var(--main-bg-color) ;
-    color:white;
-    box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5);
-    padding: 8px;
-    border-radius: 3px;
-    font-size: 13px;
-    width: fit-content;
-    font-weight: 700;
-    position: relative;
-    z-index: 100;
-    /* margin-left:10px; */
-    cursor: pointer;
+.main {
+  float: right;
+  border: none;
+  background: var(--main-bg-color);
+  color: white;
+  box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb), 0.5);
+  padding: 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  width: fit-content;
+  font-weight: 700;
+  position: relative;
+  z-index: 100;
+  /* margin-left:10px; */
+  cursor: pointer;
 }
 
-.multi_button_holder{
-    display: flex;
-    /* grid-t */
-    /* height: 30px; */
+.multi_button_holder {
+  display: flex;
+  /* grid-t */
+  /* height: 30px; */
 }
 
-.multi_button{
-    color:rgb(68, 68, 68);
-    /* box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5); */
-    background: #f3f3f3 ;
-    padding: 8px;
-    font-size: 13px;
-    width: fit-content;
-    cursor: pointer;
+.multi_button {
+  color: rgb(68, 68, 68);
+  /* box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5); */
+  background: #f3f3f3;
+  padding: 8px;
+  font-size: 13px;
+  width: fit-content;
+  cursor: pointer;
 }
 
-.multi_button.active{
-    color:white;
-    box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb),0.5);
-    background: var(--main-bg-color) ;
+.multi_button.active {
+  color: white;
+  box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb), 0.5);
+  background: var(--main-bg-color);
 }
 
-.multi_button.right{
-    border-radius: 0px 3px 3px 0px;
+.multi_button.right {
+  border-radius: 0px 3px 3px 0px;
 }
 
-.multi_button.left{
-    border-radius: 3px 0px 0px 3px;
+.multi_button.left {
+  border-radius: 3px 0px 0px 3px;
 }
 
-.picker{
-    padding: 8px;
+.picker {
+  padding: 8px;
 }
 
-.input{
-    border:none;
-    background: none;
-    color: inherit;
-    margin-top: auto;
+.input {
+  border: none;
+  background: none;
+  color: inherit;
+  margin-top: auto;
 }
 
-.options_holder{
-    display: flex;
-    flex-wrap: wrap;
-    gap:10px;
-
-    margin-top: 10px;
-    margin-bottom: 10px;
+.options_holder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

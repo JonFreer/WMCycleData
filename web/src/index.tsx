@@ -1,22 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import Map from './components/map';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import Map from "./components/map";
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import About from './pages/about';
-import Counter from './components/counter';
-import Counters from './pages/counters';
-import Main from './pages/main';
+import About from "./pages/about";
+import Counter from "./components/counter";
+import Counters from "./pages/counters";
+import Main from "./pages/main";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 
 const router = createBrowserRouter([
@@ -43,7 +40,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/about",
-        element: <About ></About>
+        element: <About></About>,
       },
       {
         path: "*",
@@ -51,7 +48,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
 ]);
 
 root.render(

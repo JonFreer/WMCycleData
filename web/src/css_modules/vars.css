@@ -3,11 +3,11 @@
   /* --main-bg-color: #1a73e8; */
   /* #0b81ff */
   --main-bg-color: #0b81ff;
-  --main-bg-color-hover:#196cd8;
-  --beta-bg-color:#ff5400;
+  --main-bg-color-hover: #196cd8;
+  --beta-bg-color: #ff5400;
   --primary-rgb: 26, 115, 232;
-  --heading-color:#6c757d;
-  --heading-secondary-color:#6c757dbc;
+  --heading-color: #6c757d;
+  --heading-secondary-color: #6c757dbc;
   --bg-color: #fafbfe;
 }
 
