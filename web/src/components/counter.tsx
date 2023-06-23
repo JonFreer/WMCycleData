@@ -115,8 +115,8 @@ function GraphHolder({
     default_chart_style
   );
 
-  var end_date = new Date();
-  var start_date = new Date();
+  var end_date: Date | null = new Date();
+  var start_date: Date | null = new Date();
   start_date.setDate(start_date.getDate() - 7);
 
   if (type == "day") {
@@ -153,6 +153,11 @@ function GraphHolder({
       end_date.setHours(0, 0, 0, 0);
       start_date = new Date(new Date().setDate(end_date.getDate() - 7));
     }
+  }
+
+  if (type == "month") {
+    end_date = null;
+    start_date = null;
   }
 
   return (

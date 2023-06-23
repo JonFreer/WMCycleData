@@ -14,8 +14,8 @@ function Graph({
   identity: number;
   time_interval: string;
   style: "bar" | "area";
-  start_date: Date;
-  end_date: Date;
+  start_date: Date | null;
+  end_date: Date | null;
 }) {
   const [counts, setCounts] = useState<Count[]>([]);
 
@@ -111,8 +111,12 @@ function Graph({
     },
     xaxis: {
       type: "datetime",
-      min: start_date.getTime(),
-      max: end_date.getTime(),
+      // min: start_date.getTime(),
+      // max: end_date.getTime(),
+      labels: {
+        datetimeUTC: false,
+        // format: 'hh dd/MM',
+      },
     },
     tooltip: {
       shared: false,
@@ -121,22 +125,22 @@ function Graph({
           return val.toFixed(0);
         },
       },
+      x: {
+        format: "H:mm dddd dd MMM",
+      },
     },
   };
 
+  if (start_date != null && options.xaxis != undefined) {
+    options.xaxis.min = start_date.getTime();
+  }
+
+  if (end_date != null && options.xaxis != undefined) {
+    options.xaxis.max = end_date.getTime();
+  }
+
   if (style == "bar") {
     options.fill = {};
-  } else {
-    // options.fill = {
-    //   type: 'gradient',
-    //   gradient: {
-    //     shadeIntensity: 1,
-    //     inverseColors: false,
-    //     opacityFrom: 0.45,
-    //     opacityTo: 0.05,
-    //     stops: [20, 100, 100, 100]
-    //   },
-    // }
   }
 
   return (
