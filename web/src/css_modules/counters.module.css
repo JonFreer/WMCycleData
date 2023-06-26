@@ -1,10 +1,34 @@
 .main {
-  display: flexbox;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
   background-color: var(--bg-color);
   min-height: calc(100% - (50px));
   padding: 24px 24px;
   color: var(--heading-color);
   gap: 20px;
+}
+
+.counterCard {
+  width: 525px;
+}
+
+@media screen and (max-width: 525px) {
+  .counterCard {
+    width: 100%;
+    min-width: 0px;
+  }
+}
+
+.counterCardButtonHolder {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -5px;
+}
+
+.counterCardButton {
+  margin: 5px;
 }
 
 .cardGap {
