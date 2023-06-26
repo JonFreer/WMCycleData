@@ -27,6 +27,18 @@ This project aims to create an Web App and API to display and make available the
 The infrastructure should now be running at `cyclecounter.localhost`, make sure that
 this resolves to `127.0.0.1`!
 
+### Utility Scripts
+
+Autoformat code:
+
+    ./dev/autoformat.sh
+
+Install git hooks for running pre-commit checks:
+
+    ./dev/install_git_hooks.sh
+
 # Deployment
 
 - Add the DOMAIN environment variable to the .env file and set to your desired domain
+
+
