@@ -30,7 +30,7 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
   return (
     <a
       href={"/counter/" + counter.identity}
-      className={`${dashboard_styles.card} ${styles.counterCard} ${styles.cardGap}`}
+      className={`${dashboard_styles.card} ${styles.counterCard}`}
     >
       <div className={`${dashboard_styles.cardBody} ${styles.cardHolder}`}>
         <div className={styles.cardDetails}>
