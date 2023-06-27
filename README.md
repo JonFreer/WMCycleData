@@ -27,6 +27,10 @@ This project aims to create an Web App and API to display and make available the
 The infrastructure should now be running at `cyclecounter.localhost`, make sure that
 this resolves to `127.0.0.1`!
 
+### Loading in data
+
+Sample data can be loaded in without a vivacity api key. This can be done by navigating to `cyclecounter.localhost/api/docs`, authorizing with the api key set in the .env (EXTERNAL_API_TOKEN) and the using the /load_dummy_counters and /load_dummy_counts requests.
+
 ### Utility Scripts
 
 Autoformat code:

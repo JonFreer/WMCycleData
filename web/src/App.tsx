@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import logo from "./logo.svg";
+import { useEffect, useState } from "react";
 import "./App.css";
 import NavBar from "./components/navBar";
 import { Outlet, useOutletContext } from "react-router-dom";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Counter, CounterPlus } from "./types/types";
+import { CounterPlus } from "./types/types";
 
 function App() {
   const [counters, setCounters] = useState<CounterPlus[]>([]);

@@ -1,5 +1,5 @@
 import styles from "../css_modules/about.module.css";
-import dash_styles from "../css_modules/dashboard.module.css";
+
 function About() {
   return (
     <>

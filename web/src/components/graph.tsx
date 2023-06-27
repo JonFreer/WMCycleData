@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useState, ChangeEvent } from "react";
-import { Count, Counter } from "../types/types";
-import Chart from "react-apexcharts";
+import { useEffect, useState } from "react";
+import { Count } from "../types/types";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 

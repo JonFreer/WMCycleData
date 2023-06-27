@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, ChangeEvent } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import styles from "../css_modules/navBar.module.css";
 class NavBar extends React.Component<{}, {}> {
@@ -10,8 +10,6 @@ class NavBar extends React.Component<{}, {}> {
           <div className={styles.beta}>Beta</div>
         </Link>
 
-        {/* <button className='navBar_button'> */}
-
         <Link className={styles.link} to="/counters">
           Counters
         </Link>
@@ -19,12 +17,6 @@ class NavBar extends React.Component<{}, {}> {
         <Link className={styles.link} to="/about">
           About
         </Link>
-
-        {/* <Link className='navBar_submit' to="/submit">
-                <IoMdAddCircle className={"navBar_icon"}></IoMdAddCircle>Contribute
-            </Link> */}
-
-        {/* </button> */}
       </div>
     );
   }

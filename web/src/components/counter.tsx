@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import NavBar from "./navBar";
 import styles from "../css_modules/dashboard.module.css";
 import dropdown_style from "../css_modules/dropdown.module.css";
 import Graph from "./graph";

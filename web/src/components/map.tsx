@@ -1,8 +1,7 @@
 import maplibregl from "maplibre-gl";
-import React, { useRef, useEffect, useState, useReducer } from "react";
+import { useRef, useEffect, useState, useReducer } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import styles from "../css_modules/map.module.css";
-import { Counter } from "../types/types";
 import { data2geojson } from "../utils/utils";
 import { useCounters } from "../App";
 import { useNavigate } from "react-router-dom";

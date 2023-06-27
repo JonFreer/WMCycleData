@@ -2,6 +2,7 @@ import { useCounters } from "../App";
 import dashboard_styles from "../css_modules/dashboard.module.css";
 import styles from "../css_modules/counters.module.css";
 import { Counter, CounterPlus } from "../types/types";
+
 function Counters() {
   const counters = useCounters();
   return (
@@ -12,6 +13,7 @@ function Counters() {
     </div>
   );
 }
+
 function StatCard(props: {
   counter: CounterPlus;
   count: (c: CounterPlus) => number;
@@ -26,6 +28,7 @@ function StatCard(props: {
     </a>
   );
 }
+
 function CounterCard({ counter }: { counter: CounterPlus }) {
   return (
     <a
@@ -52,7 +55,7 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
             <StatCard
               counter={counter}
               count={(c) => c.last_week_count}
-              description="past week"
+              description="last week"
             />
           </div>
         </div>
