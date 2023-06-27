@@ -3,12 +3,12 @@ version: '3'
 services:
 
   traefik:
-    image: traefik:v2.6
+    image: traefik:v2.10
     restart: unless-stopped
     command:
       - --api.dashboard=true
       - --accesslog=true
-
+      - --log.level=DEBUG
       - --providers.file=true
       - --providers.file.directory=/traefik/config
       - --providers.docker=true
@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN:-cyclecounter.localhost}`)"
-      - "traefik.docker.network=traefik_web"
+      - "traefik.docker.network=wmcycledata_traefik_web"
     environment:
       DOMAIN: ${DOMAIN:-cyclecounter.localhost}
     networks: 
@@ -51,7 +51,7 @@ services:
     build:
       context: ./api
       target: dev
-
+      
     volumes:
       - "./api:/app"
 

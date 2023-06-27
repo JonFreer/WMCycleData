@@ -47,7 +47,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.cc_api.tls=true"
       - "traefik.http.routers.cc_api.tls.certresolver=letsEncrypt"
-      -  "traefik.http.services.cc_api.loadbalancer.server.port=80"
+      - "traefik.http.services.cc_api.loadbalancer.server.port=80"
       - "traefik.http.routers.cc_api.rule=Host(`${DOMAIN:-cyclecounter.localhost}`) && PathPrefix(`/api`)"
       - "traefik.http.middlewares.strip_api.stripprefix.prefixes=/api"
       - "traefik.http.routers.cc_api.middlewares=strip_api"
