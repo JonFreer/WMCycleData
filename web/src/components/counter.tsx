@@ -17,6 +17,19 @@ function Counter() {
   }
   console.log(idenitiy);
 
+  var prevMonday = new Date();
+  prevMonday.setDate(
+    prevMonday.getDate() - ((prevMonday.getDay() + 6) % 7) - 7
+  );
+
+  var thisMonday = new Date();
+  thisMonday.setDate(thisMonday.getDate() - ((thisMonday.getDay() + 6) % 7));
+
+  var prevSunday = new Date();
+  prevSunday.setDate(
+    prevSunday.getDate() - ((prevSunday.getDay() + 6) % 7) - 1
+  );
+
   return (
     <>
       <div className={styles.main}>
@@ -30,15 +43,23 @@ function Counter() {
             <div className={styles.card}>
               <div className={styles.cardBody}>
                 <div>Users Today</div>
+                <div className={styles.cardDate}>
+                  {new Date().toLocaleDateString()}
+                </div>
                 <div className={styles.cardCount}>{counter.today_count}</div>
               </div>
             </div>
 
             <div className={styles.card}>
               <div className={styles.cardBody}>
-                <div>Users Last Week</div>
+                <div>Users Yesterday</div>
+                <div className={styles.cardDate}>
+                  {new Date(
+                    new Date().valueOf() - 1000 * 60 * 60 * 24
+                  ).toLocaleDateString()}
+                </div>
                 <div className={styles.cardCount}>
-                  {counter.last_week_count}
+                  {counter.yesterday_count}
                 </div>
               </div>
             </div>
@@ -46,17 +67,25 @@ function Counter() {
           <div className={styles.cardSubHolder}>
             <div className={styles.card}>
               <div className={styles.cardBody}>
-                <div>Users Yesterday</div>
-                <div className={styles.cardCount}>
-                  {counter.yesterday_count}
+                <div>Users This Week</div>
+                <div className={styles.cardDate}>
+                  {thisMonday.toLocaleDateString()} -{" "}
+                  {new Date().toLocaleDateString()}
                 </div>
+                <div className={styles.cardCount}>{counter.week_count}</div>
               </div>
             </div>
 
             <div className={styles.card}>
               <div className={styles.cardBody}>
-                <div>Users This Week</div>
-                <div className={styles.cardCount}>{counter.week_count}</div>
+                <div>Users Last Week</div>
+                <div className={styles.cardDate}>
+                  {prevMonday.toLocaleDateString()} -{" "}
+                  {prevSunday.toLocaleDateString()}
+                </div>
+                <div className={styles.cardCount}>
+                  {counter.last_week_count}
+                </div>
               </div>
             </div>
           </div>
