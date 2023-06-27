@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import requests
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import Response
 from fastapi.security.api_key import APIKey
@@ -47,6 +48,68 @@ def add_count(
         )
 
     return res
+
+
+# Load counters from wmcycledata.com/api for dev purposes
+@router.post(
+    "/load_dummy_counters/",
+    status_code=201,
+    tags=["admin"],
+    summary="Load counters from exisiting db at wmcycledata.com",
+)
+def load_dummy_counters(
+    api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+    db: Session = Depends(get_db),
+):
+    response = requests.get("https://wmcycledata.com/api/counters")
+    response.raise_for_status()
+    counters = response.json()
+
+    for counter in counters:
+        print(counter)
+        crud.create_counter(
+            db,
+            counter["identity"],
+            counter["name"],
+            counter["lat"],
+            counter["lon"],
+            counter["location_desc"],
+        )
+
+    return Response(status_code=status.HTTP_201_CREATED)
+
+
+# Load counts from wmcycledata.com/api for dev purposes
+@router.post(
+    "/load_dummy_counts/",
+    status_code=201,
+    tags=["admin"],
+    summary="Load counts from exisiting db at wmcycledata.com",
+)
+def load_dummy_counts(
+    api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+    db: Session = Depends(get_db),
+):
+    response = requests.get("https://wmcycledata.com/api/counts")
+
+    response.raise_for_status()
+    counts = response.json()
+
+    for count in counts:
+        # print(counter)
+        try:
+            crud.add_count_time(
+                db,
+                count["counter"],
+                count["count_in"],
+                count["count_out"],
+                count["timestamp"],
+                count["mode"],
+            )
+        except:
+            pass
+
+    return Response(status_code=status.HTTP_201_CREATED)
 
 
 # Request Vivacity counts and add them to the database

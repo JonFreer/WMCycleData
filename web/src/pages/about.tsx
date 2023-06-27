@@ -74,7 +74,10 @@ function About() {
         </div>
 
         <div className={styles.about_box}>
-          <a className={styles.about_box_a} href={"/api/docs"}>
+          <a
+            className={styles.about_box_a}
+            href={"https://github.com/JonFreer/WMCycleData"}
+          >
             <div>
               <h3 className={styles.about_box_heading}>GitHub</h3>
               <p className={styles.about_box_paragraph}>

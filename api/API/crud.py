@@ -16,15 +16,26 @@ def read_counters(db: Session, limit_offset: Tuple[int, int]) -> List[models.Cou
 def create_counter(
     db: Session, identity: int, name: str, lat: float, lon: float, location_desc: str
 ) -> models.Counter:
-    print("Creating Counter")
-    db_submission = models.Counter(
-        identity=identity, name=name, lat=lat, lon=lon, location_desc=location_desc
+    counter = (
+        db.query(models.Counter).where(models.Counter.identity == identity).first()
     )
 
-    db.add(db_submission)
+    if counter:
+        print("Updating Counter")
+        counter.name = name
+        counter.lat = lat
+        counter.lon = lon
+        counter.location_desc = location_desc
+    else:
+        print("Creating Counter")
+        counter = models.Counter(
+            identity=identity, name=name, lat=lat, lon=lon, location_desc=location_desc
+        )
+        db.add(counter)
+
     db.commit()
-    db.refresh(db_submission)
-    return db_submission
+    db.refresh(counter)
+    return counter
 
 
 def add_count(
