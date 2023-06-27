@@ -117,9 +117,11 @@ function Graph({
         datetimeUTC: false,
         // format: 'hh dd/MM',
       },
+      tooltip: {
+        enabled: false,
+      },
     },
     tooltip: {
-      shared: false,
       y: {
         formatter: function (val: any) {
           return val.toFixed(0);
