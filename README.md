@@ -1,4 +1,4 @@
-## WM CYCLE DATA
+# WM CYCLE DATA
 
 This project aims to create an Web App and API to display and make available the Cycle Count Data from the West Midlands Vivacity API
 
@@ -10,7 +10,7 @@ This project aims to create an Web App and API to display and make available the
 
       cd traefik/certs
       mkcert -cert-file dev.cert -key-file dev.pem "cyclecounter.localhost" "*.cyclecounter.localhost"
-      
+
 - Create a `.env` file using the `example.env` template:
 
       cp example.env .env
@@ -23,7 +23,7 @@ This project aims to create an Web App and API to display and make available the
 - Launch application:
 
       INFRA=dev make up
-      
+
 The infrastructure should now be running at `cyclecounter.localhost`, make sure that
 this resolves to `127.0.0.1`!
 
@@ -37,8 +37,6 @@ Install git hooks for running pre-commit checks:
 
     ./dev/install_git_hooks.sh
 
-# Deployment
+## Deployment
 
-- Add the DOMAIN environment variable to the .env file and set to your desired domain
-
-
+- Add the `DOMAIN` environment variable to the .env file and set to your desired domain
