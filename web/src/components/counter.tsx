@@ -171,15 +171,24 @@ function GraphHolder({
       const today = start_date.getDate();
       const currentDay = start_date.getDay();
       start_date.setDate(today - (currentDay || 7));
-      start_date.setHours(0, 0, 0, 0);
+      start_date.setHours(13, 0, 0, 0);
     } else if (date_selected == "default") {
       //last week
       end_date = new Date();
       const today = end_date.getDate();
       const currentDay = end_date.getDay();
       end_date.setDate(today - (currentDay || 7));
-      end_date.setHours(0, 0, 0, 0);
+      end_date.setHours(13, 0, 0, 0);
       start_date = new Date(new Date().setDate(end_date.getDate() - 7));
+      start_date.setHours(13, 0, 0, 0);
+    } else {
+      start_date = new Date(date_selected);
+      const today = start_date.getDate();
+      const currentDay = start_date.getDay();
+      start_date.setDate(today - (currentDay || 7));
+      start_date.setHours(13, 0, 0, 0);
+      end_date = new Date(start_date);
+      end_date = new Date(end_date.setDate(start_date.getDate() + 7));
     }
   }
 
@@ -213,6 +222,7 @@ function GraphHolder({
           style={chart_style}
           time_interval={time_interval}
           identity={identity}
+          type={type}
         ></Graph>
       </div>
     </div>
@@ -295,7 +305,7 @@ function DateSelectorDaily({
           <input
             onChange={(x) => setter(x.target.value)}
             className={dropdown_style.input}
-            type="week"
+            type="date"
             id="start"
             name="start"
           ></input>

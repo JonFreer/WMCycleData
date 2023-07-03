@@ -9,12 +9,14 @@ function Graph({
   style,
   start_date,
   end_date,
+  type,
 }: {
   identity: number;
   time_interval: string;
   style: "bar" | "area";
   start_date: Date | null;
   end_date: Date | null;
+  type: "day" | "week" | "month";
 }) {
   const [counts, setCounts] = useState<Count[]>([]);
 
@@ -138,6 +140,20 @@ function Graph({
 
   if (end_date != null && options.xaxis != undefined) {
     options.xaxis.max = end_date.getTime();
+  }
+
+  if (
+    type == "week" &&
+    options.xaxis != undefined &&
+    options.tooltip != undefined &&
+    options.tooltip.x != undefined
+  ) {
+    (options.xaxis as ApexXAxis).labels = {
+      datetimeUTC: false,
+      format: "ddd dd/MM",
+    };
+
+    options.tooltip.x.format = "ddd dd/MM";
   }
 
   if (style == "bar") {
