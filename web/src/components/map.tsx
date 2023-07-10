@@ -119,7 +119,7 @@ function Map({ identity }: { identity: number | undefined }) {
         var last_week_count = e.features[0].properties.last_week_count;
         var identity = e.features[0].properties.identity;
 
-        popup.current = new maplibregl.Popup();
+        popup.current = new maplibregl.Popup({closeButton: false});
         console.log(e.features[0]);
         let html = `<div class=${styles.popup_holder}> 
                       <div>
@@ -131,7 +131,7 @@ function Map({ identity }: { identity: number | undefined }) {
                         <div class=${styles.popup_text_main}>  ${last_week_count}</div>
                       </div>
                      </div>
-                     <a href = "/counter/${identity}" class=${styles.popup_button}> View More Data</a>`;
+                     <a href = "/counter/${identity}" class=${styles.popup_button}>More Data ...</a>`;
 
         popup.current
           .setLngLat([coordinates[0], coordinates[1]])
@@ -151,7 +151,7 @@ function Map({ identity }: { identity: number | undefined }) {
         var last_week_count = e.features[0].properties.last_week_count;
         var identity = e.features[0].properties.identity;
 
-        popup_hover.current = new maplibregl.Popup();
+        popup_hover.current = new maplibregl.Popup({closeButton: false});
         console.log(e.features[0]);
         let html = `<div class=${styles.popup_holder_hover}> 
                       <div>
