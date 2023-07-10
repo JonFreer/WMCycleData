@@ -38,7 +38,7 @@ function App() {
   );
 }
 
-export function useCounters() : CounterPlus[]  {
+export function useCounters(): CounterPlus[] {
   return useOutletContext<CounterPlus[]>();
 }
 

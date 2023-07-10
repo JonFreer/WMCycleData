@@ -11,7 +11,8 @@ function data2geojson(data: CounterPlus[]) {
       },
       properties: {
         identity: data[i].identity,
-        today_count: data[i].today_count
+        today_count: data[i].today_count,
+        last_week_count: data[i].last_week_count,
       },
     });
   }

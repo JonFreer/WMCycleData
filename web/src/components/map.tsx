@@ -10,12 +10,13 @@ function Map({ identity }: { identity: number | undefined }) {
   const counters = useCounters();
   const map = useRef<any>(null);
   const popup = useRef<any>(null);
+  const popup_hover = useRef<any>(null);
   const mapContainer = useRef<any>(null);
   const [lat] = useState(52.452907468939145);
   const [lng] = useState(-1.727910517089181);
   const [zoom] = useState(9);
   const [API_KEY] = useState("2pdGAnnIuClGHUCta2TU");
-  
+
   const forceUpdate = useReducer((x) => x + 1, 0)[1];
   const navigate = useNavigate();
   const [marker, setMarker] = useState<any>();
@@ -113,29 +114,66 @@ function Map({ identity }: { identity: number | undefined }) {
       }
 
       map.current.on("click", "unclustered-point", function (e: any) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var today_count = e.features[0].properties.today_count;
+        var last_week_count = e.features[0].properties.last_week_count;
         var identity = e.features[0].properties.identity;
-        console.log(e);
-        console.log(e.features);
-        navigate("/counter/" + identity);
+
+        popup.current = new maplibregl.Popup();
+        console.log(e.features[0]);
+        let html = `<div class=${styles.popup_holder}> 
+                      <div>
+                        <div> Today </div>
+                        <div class=${styles.popup_text_main}>  ${today_count}</div>
+                      </div>
+                      <div>
+                        <div> Last Week </div>
+                        <div class=${styles.popup_text_main}>  ${last_week_count}</div>
+                      </div>
+                     </div>
+                     <a href = "/counter/${identity}" class=${styles.popup_button}> View More Data</a>`;
+
+        popup.current
+          .setLngLat([coordinates[0], coordinates[1]])
+          .setHTML(html)
+          .addTo(map.current);
+        // var identity = e.features[0].properties.identity;
+        // console.log(e);
+        // console.log(e.features);
+        // navigate("/counter/" + identity);
       });
 
-      map.current.on("mouseenter", "unclustered-point", (e:any) => {
+      map.current.on("mouseenter", "unclustered-point", (e: any) => {
         map.current.getCanvas().style.cursor = "pointer";
 
-        var coordinates = (e.features[0].geometry).coordinates.slice();
-        var today_count  = e.features[0].properties.today_count;
+        var coordinates = e.features[0].geometry.coordinates.slice();
+        var today_count = e.features[0].properties.today_count;
+        var last_week_count = e.features[0].properties.last_week_count;
+        var identity = e.features[0].properties.identity;
 
-        popup.current = new maplibregl.Popup() 
-        console.log(e.features[0])
-        popup.current.setLngLat([coordinates[0], coordinates[1]])
-        .setHTML('Users Today: '+ today_count).addTo(map.current)
-        
+        popup_hover.current = new maplibregl.Popup();
+        console.log(e.features[0]);
+        let html = `<div class=${styles.popup_holder_hover}> 
+                      <div>
+                        <div> Today </div>
+                        <div class=${styles.popup_text_main}>  ${today_count}</div>
+                      </div>
+                      <div>
+                        <div> Last Week </div>
+                        <div class=${styles.popup_text_main}>  ${last_week_count}</div>
+                      </div>
+                     </div>`;
+
+        popup_hover.current
+          .setLngLat([coordinates[0], coordinates[1]])
+          .setHTML(html)
+          .addTo(map.current);
       });
 
       map.current.on("mouseleave", "unclustered-point", () => {
         map.current.getCanvas().style.cursor = "grab";
-        if(popup.current!=null){
-          popup.current.remove();
+        if (popup_hover.current != null) {
+          popup_hover.current.remove();
         }
       });
 

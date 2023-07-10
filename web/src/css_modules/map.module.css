@@ -3,3 +3,39 @@
   width: 100%;
   height: inherit;
 }
+
+.popup_holder {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  color: var(--heading-color);
+  margin-bottom: 20px;
+}
+
+.popup_holder_hover {
+  display: flex;
+  gap: 10px;
+  flex-direction: row;
+  color: var(--heading-color);
+}
+
+.popup_text_main {
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--color-black);
+}
+
+.popup_button {
+  background: var(--main-bg-color);
+  color: white;
+  box-shadow: 0px 2px 6px 0px rgba(var(--primary-rgb), 0.5);
+  padding: 8px;
+  border-radius: 3px;
+  font-size: 13px;
+  width: fit-content;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  margin-top: 20px;
+  /* margin-right: 10px; */
+}
