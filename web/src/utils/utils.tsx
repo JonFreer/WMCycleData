@@ -1,6 +1,6 @@
-import { Counter } from "../types/types";
+import { Counter, CounterPlus } from "../types/types";
 
-function data2geojson(data: Counter[]) {
+function data2geojson(data: CounterPlus[]) {
   const tempData = [];
   for (let i = 0; i < data.length; i++) {
     tempData.push({
@@ -11,6 +11,7 @@ function data2geojson(data: Counter[]) {
       },
       properties: {
         identity: data[i].identity,
+        today_count: data[i].today_count
       },
     });
   }

@@ -15,4 +15,4 @@ RUN pip install requests
 FROM prod as dev
 ENV PYTHONPATH=$PWD
 
-CMD PORT=80 ./prestart.sh
+CMD PORT=80 sh ./prestart.sh

@@ -9,12 +9,13 @@ import { useNavigate } from "react-router-dom";
 function Map({ identity }: { identity: number | undefined }) {
   const counters = useCounters();
   const map = useRef<any>(null);
+  const popup = useRef<any>(null);
   const mapContainer = useRef<any>(null);
   const [lat] = useState(52.452907468939145);
   const [lng] = useState(-1.727910517089181);
   const [zoom] = useState(9);
   const [API_KEY] = useState("2pdGAnnIuClGHUCta2TU");
-
+  
   const forceUpdate = useReducer((x) => x + 1, 0)[1];
   const navigate = useNavigate();
   const [marker, setMarker] = useState<any>();
@@ -118,12 +119,24 @@ function Map({ identity }: { identity: number | undefined }) {
         navigate("/counter/" + identity);
       });
 
-      map.current.on("mouseenter", "unclustered-point", () => {
+      map.current.on("mouseenter", "unclustered-point", (e:any) => {
         map.current.getCanvas().style.cursor = "pointer";
+
+        var coordinates = (e.features[0].geometry).coordinates.slice();
+        var today_count  = e.features[0].properties.today_count;
+
+        popup.current = new maplibregl.Popup() 
+        console.log(e.features[0])
+        popup.current.setLngLat([coordinates[0], coordinates[1]])
+        .setHTML('Users Today: '+ today_count).addTo(map.current)
+        
       });
 
       map.current.on("mouseleave", "unclustered-point", () => {
         map.current.getCanvas().style.cursor = "grab";
+        if(popup.current!=null){
+          popup.current.remove();
+        }
       });
 
       forceUpdate(); //force update to reload the source
