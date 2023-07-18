@@ -64,60 +64,9 @@ def read_counter_plus(
     ] = None,
     db: Session = Depends(get_db),
 ):
-    # validate.check_limit(limit)
     response.headers["X-Total-Count"] = str(5)
-    counters = crud.read_counters(db, (limit, offset))
-    response = []
-    for counter in counters:
-        today = 0
-        yesterday = 0
-        week_count = 0
-        last_week_count = 0
-
-        today_res = crud.read_counts(
-            db,
-            (None, 0),
-            time_interval="1 day",
-            identity=counter.identity,
-            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 2),
-        )
-        week_res = crud.read_counts(
-            db,
-            (None, 0),
-            time_interval="1 week",
-            identity=counter.identity,
-            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 14),
-        )
-
-        today_res = list(filter(lambda x: (x.mode == "cyclist"), today_res))
-        week_res = list(filter(lambda x: (x.mode == "cyclist"), week_res))
-
-        if len(today_res) > 0:
-            today = today_res[0].count_in + today_res[0].count_out
-
-        if len(today_res) > 1:
-            yesterday = today_res[1].count_in + today_res[1].count_out
-
-        if len(week_res) > 0:
-            week_count = week_res[0].count_in + week_res[0].count_out
-
-        if len(week_res) > 1:
-            last_week_count = week_res[1].count_in + week_res[1].count_out
-
-        response.append(
-            schemas.CounterPlus(
-                identity=counter.identity,
-                name=counter.name,
-                lat=counter.lat,
-                lon=counter.lon,
-                location_desc=counter.location_desc,
-                today_count=today,
-                week_count=week_count,
-                yesterday_count=yesterday,
-                last_week_count=last_week_count,
-            )
-        )
-    return response
+    counters = crud.read_counters_plus(db, (limit, offset))
+    return counters
 
 
 @router.get("/today/", response_model=List[schemas.Count], tags=["counters"])

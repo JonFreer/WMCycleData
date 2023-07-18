@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated
 
 import requests
@@ -9,6 +10,8 @@ from sqlalchemy.orm import Session
 from .. import config, crud, schemas, vivacity
 from ..dependencies import get_db
 from . import auth
+
+DAY_SECONDS = 86400
 
 router = APIRouter()
 
@@ -135,24 +138,82 @@ def load_vivacity(
 ):
     counters = crud.read_counters(db, [None, 0])
 
-    if identity != None:
-        counters = list(filter(lambda x: (x.identity == identity), counters))
+    results, counters_vivacity = vivacity.Vivacity.get_counts(
+        config.VivacityKey, delta_t
+    )
 
-    modes = ["cyclist", "escooter", "rental_bicycle"]
+    # Add any new counters to the counters table
 
-    for mode in modes:
-        for counter in counters:
-            results = vivacity.Vivacity.get_counts(
-                counter.identity, config.VivacityKey, mode, delta_t
-            )
-            for time in results:
-                crud.add_count_time(
-                    db,
-                    counter.identity,
-                    results[time]["In"],
-                    results[time]["Out"],
-                    time,
-                    mode,
-                )
+    counters_identitys = map(lambda x: x.identity, counters)
+    new_counters = set(counters_vivacity).difference(set(counters_identitys))
+
+    print("counters_identity", new_counters)
+
+    for counter_id in new_counters:
+        crud.create_counter(
+            db,
+            counter_id,
+            "",
+            counters_vivacity[counter_id].split(",")[0],
+            counters_vivacity[counter_id].split(",")[1],
+            "",
+        )
+
+    for count in results:
+        print(count)
+        crud.add_count_time(
+            db,
+            count["identity"],
+            count["counts"]["In"],
+            count["counts"]["Out"],
+            count["timestamp"],
+            count["mode"],
+        )
+
+    # Update cached summary
+    # Iterate through each counter and calculate daily and weekly summaries
+    counters = crud.read_counters(db, (None, 0))
+
+    for counter in counters:
+        today = 0
+        yesterday = 0
+        week_count = 0
+        last_week_count = 0
+
+        today_res = crud.read_counts(
+            db,
+            (None, 0),
+            time_interval="1 day",
+            identity=counter.identity,
+            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 2),
+            table="counts",
+        )
+        week_res = crud.read_counts(
+            db,
+            (None, 0),
+            time_interval="1 week",
+            identity=counter.identity,
+            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 14),
+            table="counts",
+        )
+
+        today_res = list(filter(lambda x: (x.mode == "cyclist"), today_res))
+        week_res = list(filter(lambda x: (x.mode == "cyclist"), week_res))
+
+        if len(today_res) > 0:
+            today = today_res[0].count_in + today_res[0].count_out
+
+        if len(today_res) > 1:
+            yesterday = today_res[1].count_in + today_res[1].count_out
+
+        if len(week_res) > 0:
+            week_count = week_res[0].count_in + week_res[0].count_out
+
+        if len(week_res) > 1:
+            last_week_count = week_res[1].count_in + week_res[1].count_out
+
+        crud.create_counter_summary(
+            db, counter.identity, today, yesterday, week_count, last_week_count
+        )
 
     return Response(status_code=status.HTTP_201_CREATED)

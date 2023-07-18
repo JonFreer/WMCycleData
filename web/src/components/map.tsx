@@ -5,6 +5,7 @@ import styles from "../css_modules/map.module.css";
 import { data2geojson } from "../utils/utils";
 import { useCounters } from "../App";
 import { useNavigate } from "react-router-dom";
+import { renderToString } from "react-dom/server";
 
 function Map({ identity }: { identity: number | undefined }) {
   const counters = useCounters();
@@ -13,13 +14,16 @@ function Map({ identity }: { identity: number | undefined }) {
   const popup_hover = useRef<any>(null);
   const mapContainer = useRef<any>(null);
   const [lat] = useState(52.452907468939145);
-  const [lng] = useState(-1.727910517089181);
+  const [lng] = useState(-1.827910517089181);
   const [zoom] = useState(9);
   const [API_KEY] = useState("2pdGAnnIuClGHUCta2TU");
 
   const forceUpdate = useReducer((x) => x + 1, 0)[1];
   const navigate = useNavigate();
   const [marker, setMarker] = useState<any>();
+  const max = Math.max(...counters.map((val) => val.today_count));
+
+  const [filterVal, setFilterVal] = useState<number>(0);
 
   useEffect(() => {
     if (map.current && counters.length > 0) {
@@ -33,31 +37,27 @@ function Map({ identity }: { identity: number | undefined }) {
   useEffect(() => {
     if (marker != undefined) {
       var counter = counters.filter((x) => x.identity == identity)[0];
-      // map.current.remove(marker);
       (marker as maplibregl.Marker).setLngLat([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setCenter([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setZoom(16);
-
       (map.current as maplibregl.Map).removeLayer("unclustered-point");
-
-      map.current.addLayer({
-        id: "unclustered-point",
-        type: "circle",
-        source: "counters",
-        filter: ["!=", "identity", Number(identity)],
-        paint: {
-          "circle-color": "#3291fc",
-          "circle-radius": 10,
-          "circle-stroke-width": 4,
-          "circle-stroke-color": "#3291fc50",
-        },
-      });
     }
   }, [identity]);
 
+  // Update styling based on filter val
   useEffect(() => {
-    // map.current==null;
+    if (map.current != null) {
+      if (map.current._isReady) {
+        map.current.setFilter("unclustered-point", [
+          "all",
+          ["!=", "identity", Number(identity)],
+          [">=", "today_count", Number(filterVal)],
+        ]);
+      }
+    }
+  }, [filterVal]);
 
+  useEffect(() => {
     if (map.current) return; //stops map from intializing more than once
 
     map.current = new maplibregl.Map({
@@ -66,6 +66,8 @@ function Map({ identity }: { identity: number | undefined }) {
       center: [lng, lat],
       zoom: zoom,
     });
+
+    map.current._isReady = false;
 
     map.current.on("load", function () {
       map.current.addControl(
@@ -88,12 +90,29 @@ function Map({ identity }: { identity: number | undefined }) {
         id: "unclustered-point",
         type: "circle",
         source: "counters",
-        filter: ["!=", "identity", Number(identity)],
+        filter: [
+          "all",
+          ["!=", "identity", Number(identity)],
+          [">", "today_count", filterVal],
+        ],
+        layout: {
+          "circle-sort-key": ["get", "today_count"],
+        },
         paint: {
-          "circle-color": "#3291fc",
+          "circle-color": [
+            "interpolate",
+            ["linear"],
+            ["get", "today_count"],
+            0,
+            "#f7d756",
+            80,
+            "#8f0da3",
+            150,
+            "#444444",
+          ],
           "circle-radius": 10,
-          "circle-stroke-width": 4,
-          "circle-stroke-color": "#3291fc50",
+          "circle-stroke-width": 1,
+          "circle-stroke-color": "#ffffff50",
         },
       });
 
@@ -119,40 +138,53 @@ function Map({ identity }: { identity: number | undefined }) {
         var last_week_count = e.features[0].properties.last_week_count;
         var identity = e.features[0].properties.identity;
 
-        popup.current = new maplibregl.Popup({closeButton: false});
-        console.log(e.features[0]);
-        let html = `<div class=${styles.popup_holder}> 
-                      <div>
-                        <div> Today </div>
-                        <div class=${styles.popup_text_main}>  ${today_count}</div>
-                      </div>
-                      <div>
-                        <div> Last Week </div>
-                        <div class=${styles.popup_text_main}>  ${last_week_count}</div>
-                      </div>
-                     </div>
-                     <a href = "/counter/${identity}" class=${styles.popup_button}>More Data ...</a>`;
+        popup.current = new maplibregl.Popup({ closeButton: false });
+
+        let html = renderToString(
+          <>
+            <div className={styles.popup_holder}>
+              <div>
+                <div> Today </div>
+                <div className={styles.popup_text_main}> {today_count}</div>
+              </div>
+              <div>
+                <div> Last Week </div>
+                <div className={styles.popup_text_main}> {last_week_count}</div>
+              </div>
+            </div>
+            <div id="popup_button" className={styles.popup_button}>
+              More Data ...
+            </div>
+          </>
+        );
 
         popup.current
           .setLngLat([coordinates[0], coordinates[1]])
           .setHTML(html)
           .addTo(map.current);
-        // var identity = e.features[0].properties.identity;
-        // console.log(e);
-        // console.log(e.features);
-        // navigate("/counter/" + identity);
+
+        document
+          .getElementById("popup_button")
+          ?.addEventListener("click", () => navigate("/counter/" + identity));
       });
 
-      map.current.on("mouseenter", "unclustered-point", (e: any) => {
-        map.current.getCanvas().style.cursor = "pointer";
+      map.current.on("mousemove", "unclustered-point", (e: any) => {
+        var identity = e.features[0].properties.identity;
 
+        if (popup_hover.current != null) {
+          if (identity == popup_hover.current.identity) {
+            return;
+          }
+          popup_hover.current.remove();
+        }
+
+        map.current.getCanvas().style.cursor = "pointer";
         var coordinates = e.features[0].geometry.coordinates.slice();
         var today_count = e.features[0].properties.today_count;
         var last_week_count = e.features[0].properties.last_week_count;
-        var identity = e.features[0].properties.identity;
 
-        popup_hover.current = new maplibregl.Popup({closeButton: false});
-        console.log(e.features[0]);
+        popup_hover.current = new maplibregl.Popup({ closeButton: false });
+
         let html = `<div class=${styles.popup_holder_hover}> 
                       <div>
                         <div> Today </div>
@@ -164,6 +196,8 @@ function Map({ identity }: { identity: number | undefined }) {
                       </div>
                      </div>`;
 
+        popup_hover.current.identity = identity;
+
         popup_hover.current
           .setLngLat([coordinates[0], coordinates[1]])
           .setHTML(html)
@@ -174,14 +208,59 @@ function Map({ identity }: { identity: number | undefined }) {
         map.current.getCanvas().style.cursor = "grab";
         if (popup_hover.current != null) {
           popup_hover.current.remove();
+          popup_hover.current = null;
         }
       });
 
+      map.current._isReady = true;
       forceUpdate(); //force update to reload the source
     });
   });
 
-  return <div ref={mapContainer} className={styles.mapContainer} />;
+  return (
+    <>
+      <div ref={mapContainer} className={styles.mapContainer} />
+      {identity == undefined ? (
+        <Settings
+          max={max}
+          val={filterVal}
+          callback={(val: number) => setFilterVal(val)}
+        ></Settings>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+}
+
+function Settings({
+  max,
+  val,
+  callback,
+}: {
+  max: number;
+  val: number;
+  callback: any;
+}) {
+  return (
+    <div className={styles.settings_holder}>
+      <div className={styles.settings}>
+        <div className={styles.settings_header}>
+          <span className={styles.settings_header_left}>Min Count</span>
+          <span className={styles.settings_header_right}>{val}</span>
+        </div>
+        <input
+          onChange={(val) => callback(val.target.value)}
+          className={styles.settings_range}
+          type="range"
+          min="0"
+          max={max}
+          defaultValue={val}
+          id="myRange"
+        />
+      </div>
+    </div>
+  );
 }
 
 export default Map;

@@ -13,7 +13,7 @@ export interface CounterPlus {
   lon: number;
   location_desc: string;
   today_count: number;
-  week_count: number;
+  this_week_count: number;
   yesterday_count: number;
   last_week_count: number;
 }

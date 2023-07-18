@@ -39,3 +39,41 @@
   margin-top: 20px;
   /* margin-right: 10px; */
 }
+
+.settings_holder {
+  position: absolute;
+  width: 100vw;
+  bottom: 20px;
+}
+
+.settings {
+  margin: auto;
+  padding: 20px;
+  width: 300px;
+  /* height: 100px; */
+  max-width: 95vw;
+  background-color: white;
+  border-radius: 14px;
+  box-shadow: 0px 2px 3px 0px rgba(0.5, 0.5, 0.5, 0.1);
+}
+
+.settings_range {
+  width: 100%;
+}
+
+.settings_header {
+  width: 100%;
+}
+
+.settings_header_left {
+  color: var(--heading-color);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.settings_header_right {
+  font-weight: 700;
+  color: var(--heading-color);
+  font-size: 13px;
+  float: right;
+}

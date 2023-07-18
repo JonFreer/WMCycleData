@@ -4,12 +4,40 @@ from typing import List, Tuple
 from sqlalchemy import bindparam, text
 from sqlalchemy.orm import Session
 
-from . import models
+from . import models, schemas
 
 
 def read_counters(db: Session, limit_offset: Tuple[int, int]) -> List[models.Counter]:
     limit, offset = limit_offset
     counters = db.query(models.Counter).offset(offset).limit(limit).all()
+    return counters
+
+
+def read_counters_plus(
+    db: Session, limit_offset: Tuple[int, int]
+) -> List[schemas.CounterPlus]:
+    limit, offset = limit_offset
+    counters = (
+        db.query(
+            models.Counter.identity,
+            models.Counter.name,
+            models.Counter.lat,
+            models.Counter.lon,
+            models.Counter.location_desc,
+            models.CounterSummary.today_count,
+            models.CounterSummary.yesterday_count,
+            models.CounterSummary.this_week_count,
+            models.CounterSummary.last_week_count,
+        )
+        .join(
+            models.CounterSummary,
+            models.Counter.identity == models.CounterSummary.identity,
+            isouter=True,
+        )
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
     return counters
 
 
@@ -36,6 +64,42 @@ def create_counter(
     db.commit()
     db.refresh(counter)
     return counter
+
+
+def create_counter_summary(
+    db: Session,
+    identity: int,
+    today: int,
+    yesterday: int,
+    this_week: int,
+    last_week: int,
+) -> models.CounterSummary:
+    counter_summary = (
+        db.query(models.CounterSummary)
+        .where(models.CounterSummary.identity == identity)
+        .first()
+    )
+
+    if counter_summary:
+        print("Updating Counter")
+        counter_summary.today_count = today
+        counter_summary.yesterday_count = yesterday
+        counter_summary.this_week_count = this_week
+        counter_summary.last_week_count = last_week
+    else:
+        print("Creating Counter")
+        counter_summary = models.CounterSummary(
+            identity=identity,
+            today_count=today,
+            yesterday_count=yesterday,
+            this_week_count=this_week,
+            last_week_count=last_week,
+        )
+        db.add(counter_summary)
+
+    db.commit()
+    db.refresh(counter_summary)
+    return counter_summary
 
 
 def add_count(
@@ -68,14 +132,14 @@ def add_count_time(
     time: datetime.datetime,
     mode: str,
 ) -> models.Counts:
-    # Validate if the counter is valid
-    res = (
-        db.query(models.Counter)
-        .where(models.Counter.identity == counter_identity)
-        .all()
-    )
-    if len(res) == 0:
-        raise Exception("Counter name not valid: name not in counters table.")
+    # # Validate if the counter is valid
+    # res = (
+    #     db.query(models.Counter)
+    #     .where(models.Counter.identity == counter_identity)
+    #     .all()
+    # )
+    # if len(res) == 0:
+    #     raise Exception("Counter name not valid: name not in counters table.")
 
     # Check if key is in db
     query = (
@@ -133,25 +197,28 @@ def read_counts(
     time_interval: str,
     identity: int,
     start_time: int,
+    table: str = "counts_hourly",
 ) -> List[models.Counts]:
     limit, offset = limit_offset
-    # print(time_interval,identity,start_time)
-    # counters = db.query(models.Counts).offset(offset).limit(limit).all()
+
     sql = text(
         """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
                mode, counter ,
                sum(count_in) as count_in, 
                sum(count_out) as count_out 
-               from counts 
+               FROM """
+        + table
+        + """ 
                WHERE counter = :identity AND timestamp > TIMESTAMPTZ :start_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
     )
+
     sql = sql.bindparams(
         bindparam("timeInterval", value=time_interval),
         bindparam("identity", value=identity),
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
     )
+
     results = db.execute(sql).all()
-    print(results)
     return results

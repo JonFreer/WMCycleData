@@ -1,15 +1,18 @@
 import { useCounters } from "../App";
 import dashboard_styles from "../css_modules/dashboard.module.css";
 import styles from "../css_modules/counters.module.css";
-import { Counter, CounterPlus } from "../types/types";
+import { CounterPlus } from "../types/types";
+import { Link } from "react-router-dom";
 
 function Counters() {
   const counters = useCounters();
   return (
     <div className={styles.main}>
-      {counters.map(function (object, i) {
-        return <CounterCard counter={object} key={i} />;
-      })}
+      {counters
+        .filter((x) => x.name !== "")
+        .map(function (object, i) {
+          return <CounterCard counter={object} key={i} />;
+        })}
     </div>
   );
 }
@@ -20,19 +23,16 @@ function StatCard(props: {
   description: string;
 }) {
   return (
-    <a
-      className={`${dashboard_styles.button} ${styles.counterCardButton}`}
-      href={"/counter/" + props.counter.identity}
-    >
+    <div className={`${dashboard_styles.button} ${styles.counterCardButton}`}>
       {props.count(props.counter)} {props.description}
-    </a>
+    </div>
   );
 }
 
 function CounterCard({ counter }: { counter: CounterPlus }) {
   return (
-    <a
-      href={"/counter/" + counter.identity}
+    <Link
+      to={"/counter/" + counter.identity}
       className={`${dashboard_styles.card} ${styles.counterCard}`}
     >
       <div className={`${dashboard_styles.cardBody} ${styles.cardHolder}`}>
@@ -60,7 +60,7 @@ function CounterCard({ counter }: { counter: CounterPlus }) {
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 

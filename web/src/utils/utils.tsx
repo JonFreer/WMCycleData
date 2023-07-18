@@ -1,4 +1,4 @@
-import { Counter, CounterPlus } from "../types/types";
+import { CounterPlus } from "../types/types";
 
 function data2geojson(data: CounterPlus[]) {
   const tempData = [];

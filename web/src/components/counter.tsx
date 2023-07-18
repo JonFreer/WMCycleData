@@ -71,7 +71,9 @@ function Counter() {
                   {thisMonday.toLocaleDateString()} -{" "}
                   {new Date().toLocaleDateString()}
                 </div>
-                <div className={styles.cardCount}>{counter.week_count}</div>
+                <div className={styles.cardCount}>
+                  {counter.this_week_count}
+                </div>
               </div>
             </div>
 
