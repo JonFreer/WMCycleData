@@ -2,7 +2,6 @@ FROM python:3.11 as prod
 
 ENV FORWARDED_ALLOW_IPS="*"
 
-
 COPY ./ /app/
 WORKDIR "/app"
 

@@ -37,7 +37,7 @@ services:
   web:
     build:
       context: ./web
-      target: dev
+      # target: dev
     environment:
       REACT_APP_HOST: ${DOMAIN:-cyclecounter.localhost}
     # labels:

@@ -11,7 +11,7 @@ function App() {
     const requestOptions = {
       method: "GET",
     };
-    fetch("/api/counters_plus", requestOptions).then((response) => {
+    fetch("/api/counters_plus/", requestOptions).then((response) => {
       console.log(response);
       if (response.status === 200) {
         response.json().then((data: CounterPlus[]) => {
