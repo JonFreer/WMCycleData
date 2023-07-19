@@ -1,4 +1,4 @@
-FROM python:3.10 as prod
+FROM python:3.11 as prod
 
 ENV FORWARDED_ALLOW_IPS="*"
 
