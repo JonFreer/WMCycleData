@@ -11,7 +11,7 @@ class Counter(BaseModel):
     location_desc: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CounterPlus(BaseModel):
@@ -26,7 +26,7 @@ class CounterPlus(BaseModel):
     yesterday_count: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class Count(BaseModel):
@@ -37,4 +37,4 @@ class Count(BaseModel):
     count_out: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
