@@ -21,7 +21,7 @@ services:
   web:
     build:
       context: ./web
-      # target: prod
+      target: prod
       args:
         REACT_APP_HOST: ${DOMAIN:-cyclecounter.co.uk}
     restart: unless-stopped
