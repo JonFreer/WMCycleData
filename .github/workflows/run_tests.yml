@@ -1,0 +1,36 @@
+name: Run tests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup env
+        run: |
+          echo "PROJECT_ROOT=${GITHUB_WORKSPACE}" >> $GITHUB_ENV
+          echo "PROJECT_NAME=combine" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/bin" >> $GITHUB_PATH
+
+      - name: Start docker containers
+        run: |
+          echo "VERSION=$(versioninfo)" >> $GITHUB_ENV
+          docker-compose -f docker-compose-test.yaml build 
+          docker-compose -f docker-compose-test.yaml up --detach db 
+          sleep 10  # wait for database to be ready
+        #   docker-compose -f tests-docker-compose.yml run backend bash -c "rails db:create && rails db:migrate && rails db:seed"
+
+      - name: Run backend unit and integration tests
+        run: |
+          docker-compose -f docker-compose-test.yaml up api

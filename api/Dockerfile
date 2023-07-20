@@ -11,3 +11,8 @@ FROM prod as dev
 ENV PYTHONPATH=$PWD
 
 CMD PORT=80 sh ./prestart.sh
+
+FROM prod as test
+ENV PYTHONPATH=$PWD
+
+CMD pytest
