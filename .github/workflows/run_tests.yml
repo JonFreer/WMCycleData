@@ -40,3 +40,24 @@ jobs:
       - name: Run backend unit and integration tests
         run: |
           docker-compose -f docker-compose-test.yaml up api
+  buildAndRun:
+    runs-on: ubuntu-latest
+    env:
+        RAILS_ENV: test
+        DB_USERNAME: gh_db_un
+        DB_PASSWORD: gh_db_pw
+        API_DB_USERNAME: gh_api_un
+        API_DB_PASSWORD: gh_api_pw
+        SESSION_SECRET: gh_secret
+        EXTERNAL_API_TOKEN: gh_token
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build docker containers
+        run: |
+            docker-compose -f docker-compose.yaml build
+            docker-compose -f docker-compose.yaml up -d
+            sleep 10
+            docker-compose -f docker-compose.yaml stop
+          
