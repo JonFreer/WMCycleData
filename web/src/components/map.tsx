@@ -133,6 +133,12 @@ function Map({ identity }: { identity: number | undefined }) {
       }
 
       map.current.on("click", "unclustered-point", function (e: any) {
+
+        // Remove old popup to remove double binding onclick
+        if (popup.current != null) {
+          popup.current.remove();
+        }
+
         var coordinates = e.features[0].geometry.coordinates.slice();
         var today_count = e.features[0].properties.today_count;
         var last_week_count = e.features[0].properties.last_week_count;
