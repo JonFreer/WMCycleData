@@ -1,4 +1,4 @@
-FROM python:3.11 as prod
+FROM python:3.11 as main
 
 ENV FORWARDED_ALLOW_IPS="*"
 
@@ -7,12 +7,15 @@ WORKDIR "/app"
 
 RUN pip install -r requirements.txt
 
-FROM prod as dev
+FROM main as test
 ENV PYTHONPATH=$PWD
+CMD pytest
 
+FROM main as dev
+ENV PYTHONPATH=$PWD
 CMD PORT=80 sh ./prestart.sh
 
-FROM prod as test
+FROM main as prod
 ENV PYTHONPATH=$PWD
+CMD PORT=80 sh ./prestart.sh
 
-CMD pytest
