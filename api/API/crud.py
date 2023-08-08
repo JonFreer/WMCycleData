@@ -177,7 +177,7 @@ def read_all_counts(
     limit, offset = limit_offset
     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
     sql = text(
-        """SELECT time_bucket(:time_interval, timestamp) as timestamp, 
+        """SELECT time_bucket(:timeInterval, timestamp) as timestamp, 
                mode, counter ,
                sum(count_in) as count_in, 
                sum(count_out) as count_out 
