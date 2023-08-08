@@ -177,7 +177,7 @@ def read_all_counts(
     limit, offset = limit_offset
     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
     sql = text(
-        """SELECT time_bucket('1 hour', timestamp) as timestamp, 
+        """SELECT time_bucket(:time_interval, timestamp) as timestamp, 
                mode, counter ,
                sum(count_in) as count_in, 
                sum(count_out) as count_out 
@@ -186,6 +186,8 @@ def read_all_counts(
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
     )
+    sql = sql.bindparams(
+        bindparam("timeInterval", value=time_interval))
     results = db.execute(sql).all()
     print(results)
     return results
