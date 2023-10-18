@@ -32,6 +32,14 @@ def read_counter(
 def read_all_counts(
     response: Response,
     identity: int | None = None,
+    # start_time: int | None = None,
+    # end_time: int | None = None,
+    start_time: Annotated[
+        int | None, Query(title="Start Time", description="Start timestamp of data. Defaults to zero.")
+    ] = None,
+    end_time: Annotated[
+        int | None, Query(title="End Time", description="End timestamp of data. Defaults to current time.")
+    ] = None,
     offset: int = 0,
     limit: int = 25,
     time_interval: str = "1 hour",
@@ -47,7 +55,8 @@ def read_all_counts(
             (limit, offset),
             time_interval=time_interval,
             identity=identity,
-            start_time=0,
+            start_time=start_time,
+            end_time=end_time
         )
 
 

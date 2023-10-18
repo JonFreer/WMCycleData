@@ -199,6 +199,7 @@ def read_counts(
     time_interval: str,
     identity: int,
     start_time: int,
+    end_time:int | None = None,
     table: str = "counts_hourly",
 ) -> List[models.Counts]:
     limit, offset = limit_offset
@@ -212,14 +213,19 @@ def read_counts(
         + table
         + """ 
                WHERE counter = :identity AND timestamp > TIMESTAMPTZ :start_time
+               AND timestamp <= TIMESTAMPTZ :end_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
     )
+
+    if end_time == None:
+        end_time = datetime.datetime.now().timestamp()
 
     sql = sql.bindparams(
         bindparam("timeInterval", value=time_interval),
         bindparam("identity", value=identity),
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
+        bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
     )
 
     results = db.execute(sql).all()
