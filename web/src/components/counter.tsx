@@ -219,8 +219,8 @@ function GraphHolder({
       </div>
       <div className={styles.cardBody} style={{ paddingTop: "0px" }}>
         <Graph
-          start_date={start_date}
-          end_date={end_date}
+          default_start_date={start_date}
+          default_end_date={end_date}
           style={chart_style}
           time_interval={time_interval}
           identity={identity}

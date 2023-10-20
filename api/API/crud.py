@@ -198,7 +198,7 @@ def read_counts(
     limit_offset: Tuple[int, int],
     time_interval: str,
     identity: int,
-    start_time: int,
+    start_time: int | None = None,
     end_time:int | None = None,
     table: str = "counts_hourly",
 ) -> List[models.Counts]:
@@ -220,6 +220,8 @@ def read_counts(
 
     if end_time == None:
         end_time = datetime.datetime.now().timestamp()
+    if start_time == None:
+        start_time = 0
 
     sql = sql.bindparams(
         bindparam("timeInterval", value=time_interval),

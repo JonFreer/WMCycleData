@@ -1,39 +1,62 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Count } from "../types/types";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import apexchart from "apexcharts";
+import { count } from "console";
 
 function Graph({
   identity,
   time_interval,
   style,
-  start_date,
-  end_date,
+  default_start_date,
+  default_end_date,
   type,
 }: {
   identity: number;
   time_interval: string;
   style: "bar" | "area";
-  start_date: Date | null;
-  end_date: Date | null;
+  default_start_date: Date | null;
+  default_end_date: Date | null;
   type: "day" | "week" | "month";
 }) {
-  const [counts, setCounts] = useState<Count[]>([]);
 
-  function getCounts() {
-    console.log(style);
+  const [min, setMin] = useState<number>(10000000000000000);
 
+  // By defualt the min and max should be set to the props
+
+  const series: ApexAxisChartSeries = [];
+
+  function updateCounts(counts: Count[]) {
+    const series: ApexAxisChartSeries = [
+      {
+        name: "Users In",
+        data: counts.map((x) => [new Date(x.timestamp).getTime(), x.count_in]),
+      },
+      {
+        name: "Users Out",
+        data: counts.map((x) => [new Date(x.timestamp).getTime(), x.count_out]),
+      },
+    ];
+
+    apexchart.exec(type, "updateSeries", series, false);
+  }
+
+  function getCounts(_min: number = 0, _max: number = 0) {
+    console.log(time_interval)
     const requestOptions = {
       method: "GET",
     };
-    console.log(time_interval);
-    fetch(
+
+    let query =
       "/api/counts/?time_interval=" +
-        encodeURIComponent(time_interval) +
-        "&identity=" +
-        identity,
-      requestOptions
-    ).then((response) => {
+      encodeURIComponent(time_interval) +
+      "&identity=" +
+      identity;
+
+    query = query + "&start_time=" + Math.floor(_min / 1000);
+    
+    fetch(query, requestOptions).then((response) => {
       console.log(response);
       if (response.status == 200) {
         response.json().then((data: Count[]) => {
@@ -41,7 +64,7 @@ function Graph({
           let filtered = data.filter(
             (x) => x.counter == identity && x.mode == "cyclist"
           );
-          setCounts(filtered);
+          updateCounts(filtered);
         });
       } else {
         console.log("/api/counters", response.text);
@@ -49,28 +72,17 @@ function Graph({
     });
   }
 
-  // useEffect(()=>{
-  //   this.forceUpdate();
-  // },[style]
-  // )
-
   useEffect(() => {
-    getCounts();
-  }, [style, time_interval, identity]);
-
-  const series: ApexAxisChartSeries = [
-    {
-      name: "Users In",
-      data: counts.map((x) => [new Date(x.timestamp).getTime(), x.count_in]),
-    },
-    {
-      name: "Users Out",
-      data: counts.map((x) => [new Date(x.timestamp).getTime(), x.count_out]),
-    },
-  ];
+    if (default_start_date != undefined) {
+      getCounts(default_start_date.getTime());
+    } else {
+      getCounts();
+    }
+  }, [style, time_interval, identity, default_start_date, default_end_date]);
 
   const options: ApexOptions = {
     chart: {
+      id: type,
       type: "area",
       stacked: false,
       // height: "100%",
@@ -82,6 +94,25 @@ function Graph({
       },
       toolbar: {
         autoSelected: "zoom",
+      },
+      events: {
+        zoomed: function (chartContext, { xaxis, yaxis }) {
+
+         
+
+          if(xaxis.min < min){
+            getCounts(xaxis.min, xaxis.max);
+            setMin(xaxis.min)
+            // setMax(xaxis.max)
+          }
+
+          chartContext.updateOptions({
+            xaxis: {
+              min: xaxis.min,
+              max: xaxis.max,
+            },
+          });
+        },
       },
     },
     dataLabels: {
@@ -112,11 +143,8 @@ function Graph({
     },
     xaxis: {
       type: "datetime",
-      // min: start_date.getTime(),
-      // max: end_date.getTime(),
       labels: {
         datetimeUTC: false,
-        // format: 'hh dd/MM',
       },
       tooltip: {
         enabled: false,
@@ -134,12 +162,17 @@ function Graph({
     },
   };
 
-  if (start_date != null && options.xaxis != undefined) {
-    options.xaxis.min = start_date.getTime();
-  }
-
-  if (end_date != null && options.xaxis != undefined) {
-    options.xaxis.max = end_date.getTime();
+  if (options.xaxis) {
+    // options.xaxis.min = min;
+    if (default_start_date != null) {
+      options.xaxis.min = default_start_date.getTime();
+      // setMax(default_end_date.getTime());
+    }
+    // options.xaxis.max = max;
+    if (default_end_date != null) {
+      options.xaxis.max = default_end_date.getTime();
+      // setMax(default_end_date.getTime());
+    }
   }
 
   if (
