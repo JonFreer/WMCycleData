@@ -139,7 +139,7 @@ def load_vivacity(
     counters = crud.read_counters(db, [None, 0])
 
     results, counters_vivacity = vivacity.Vivacity.get_counts(
-        config.VivacityKey, delta_t,identity
+        config.VivacityKey, delta_t, identity
     )
 
     # Add any new counters to the counters table

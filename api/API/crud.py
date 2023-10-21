@@ -177,12 +177,12 @@ def add_count_time(
 #     limit, offset = limit_offset
 #     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
 #     sql = text(
-#         """SELECT time_bucket(:timeInterval, timestamp) as timestamp, 
+#         """SELECT time_bucket(:timeInterval, timestamp) as timestamp,
 #                mode, counter ,
-#                sum(count_in) as count_in, 
-#                sum(count_out) as count_out 
-               
-#                from counts 
+#                sum(count_in) as count_in,
+#                sum(count_out) as count_out
+
+#                from counts
 #                GROUP BY 1,2,3
 #                ORDER BY timestamp DESC"""
 #     )
@@ -199,29 +199,41 @@ def read_counts(
     time_interval: str,
     identity: int | None = None,
     start_time: int | None = None,
-    end_time:int | None = None,
+    end_time: int | None = None,
     modes: List[str] | None = None,
     table: str = "counts_hourly",
 ) -> List[models.Counts]:
     limit, offset = limit_offset
 
-    sql_string = """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
+    sql_string = (
+        """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
                mode, counter ,
                sum(count_in) as count_in, 
                sum(count_out) as count_out 
-               FROM """ + table + """
+               FROM """
+        + table
+        + """
                WHERE """
-    
+    )
+
     if identity != None:
-        sql_string = sql_string +   "counter = :identity AND "
+        sql_string = sql_string + "counter = :identity AND "
 
     if modes != None:
-        sql_string = sql_string + "mode IN ("+",".join("'{0}'".format(x) for x in modes)+") AND "
+        sql_string = (
+            sql_string
+            + "mode IN ("
+            + ",".join("'{0}'".format(x) for x in modes)
+            + ") AND "
+        )
 
-    sql_string = sql_string + """timestamp > TIMESTAMPTZ :start_time
+    sql_string = (
+        sql_string
+        + """timestamp > TIMESTAMPTZ :start_time
                AND timestamp <= TIMESTAMPTZ :end_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
+    )
 
     sql = text(sql_string)
 

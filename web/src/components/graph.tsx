@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Count } from "../types/types";
 import ReactApexChart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import apexchart from "apexcharts";
-import { count } from "console";
 
 function Graph({
   identity,
@@ -60,11 +59,11 @@ function Graph({
 
     fetch(query, requestOptions).then((response) => {
       console.log(response);
-      if (response.status == 200) {
+      if (response.status === 200) {
         response.json().then((data: Count[]) => {
           console.log(data);
           let filtered = data.filter(
-            (x) => x.counter == identity && x.mode == "cyclist"
+            (x) => x.counter === identity && x.mode === "cyclist"
           );
           updateCounts(filtered);
         });
@@ -75,7 +74,7 @@ function Graph({
   }
 
   useEffect(() => {
-    if (default_start_date != undefined) {
+    if (default_start_date !== null) {
       getCounts(default_start_date.getTime() - 604800000);
       min.current = default_start_date.getTime() - 604800000;
       // setMin();
@@ -164,22 +163,22 @@ function Graph({
 
   if (options.xaxis) {
     // options.xaxis.min = min;
-    if (default_start_date != null) {
+    if (default_start_date !== null) {
       options.xaxis.min = default_start_date.getTime();
       // setMax(default_end_date.getTime());
     }
     // options.xaxis.max = max;
-    if (default_end_date != null) {
+    if (default_end_date !== null) {
       options.xaxis.max = default_end_date.getTime();
       // setMax(default_end_date.getTime());
     }
   }
 
   if (
-    type == "week" &&
-    options.xaxis != undefined &&
-    options.tooltip != undefined &&
-    options.tooltip.x != undefined
+    type === "week" &&
+    options.xaxis !== undefined &&
+    options.tooltip !== undefined &&
+    options.tooltip.x !== undefined
   ) {
     (options.xaxis as ApexXAxis).labels = {
       datetimeUTC: false,
@@ -189,7 +188,7 @@ function Graph({
     options.tooltip.x.format = "ddd dd/MM";
   }
 
-  if (style == "bar") {
+  if (style === "bar") {
     options.fill = {};
   }
 

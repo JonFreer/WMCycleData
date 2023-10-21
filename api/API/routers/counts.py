@@ -1,7 +1,7 @@
 import datetime
 from typing import Annotated, List
-from fastapi import HTTPException
-from fastapi import APIRouter, Depends, Query
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 
@@ -33,16 +33,26 @@ def read_counts(
     response: Response,
     identity: int | None = None,
     start_time: Annotated[
-        int | None, Query(title="Start Time", description="Start timestamp of data. Defaults to zero.")
+        int | None,
+        Query(
+            title="Start Time", description="Start timestamp of data. Defaults to zero."
+        ),
     ] = None,
     end_time: Annotated[
-        int | None, Query(title="End Time", description="End timestamp of data. Defaults to current time.")
+        int | None,
+        Query(
+            title="End Time",
+            description="End timestamp of data. Defaults to current time.",
+        ),
     ] = None,
     offset: int = 0,
     limit: int = 25,
     time_interval: str = "1 hour",
-    modes: List[str] = Query(None,description= '''Mode of transport. Leave blank to return values for all modes. 
-                            List of available modes: cyclist, car, pedestrian, truck, motorbike, escooter, bus, van, rigid, taxi. '''),
+    modes: List[str] = Query(
+        None,
+        description="""Mode of transport. Leave blank to return values for all modes. 
+                            List of available modes: cyclist, car, pedestrian, truck, motorbike, escooter, bus, van, rigid, taxi. """,
+    ),
     db: Session = Depends(get_db),
 ):
     # validate.check_limit(limit)
@@ -58,7 +68,7 @@ def read_counts(
         identity=identity,
         start_time=start_time,
         end_time=end_time,
-        modes=modes
+        modes=modes,
     )
 
 
@@ -99,12 +109,25 @@ def read_today(
 
     return res
 
+
 def check_modes(modes: List[str]):
-    MODES = set(["cyclist", "car", "pedestrian", "truck", "motorbike", "escooter", "bus", "van", "rigid", "taxi"])
-    modes_diff = set(modes)-MODES
+    MODES = set(
+        [
+            "cyclist",
+            "car",
+            "pedestrian",
+            "truck",
+            "motorbike",
+            "escooter",
+            "bus",
+            "van",
+            "rigid",
+            "taxi",
+        ]
+    )
+    modes_diff = set(modes) - MODES
     if len(modes_diff) != 0:
         raise HTTPException(
             status_code=400,
             detail=f"Invalid modes: {modes_diff}",
         )
-

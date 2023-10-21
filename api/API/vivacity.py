@@ -5,9 +5,8 @@ import requests
 
 class Vivacity:
     # Call and return the json from the Vivacity API
-    def get_results(api_key, start_time, end_time,identity):
-        
-        if(identity==None):
+    def get_results(api_key, start_time, end_time, identity):
+        if identity == None:
             response = requests.get(
                 "https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&NullDataPoints=false".format(
                     api_key, start_time
@@ -16,7 +15,7 @@ class Vivacity:
         else:
             response = requests.get(
                 "https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&NullDataPoints=false&identity={}".format(
-                    api_key, start_time,identity
+                    api_key, start_time, identity
                 )
             )
         response.raise_for_status()
@@ -67,8 +66,8 @@ class Vivacity:
 
         return out, counters
 
-    def get_counts(api_key, delta_t,identity=None):
+    def get_counts(api_key, delta_t, identity=None):
         time = int(datetime.datetime.now().timestamp()) - delta_t
-        results = Vivacity.get_results(api_key, time, "now",identity)
+        results = Vivacity.get_results(api_key, time, "now", identity)
         filtered_results, counters = Vivacity.filter_results(results)
         return filtered_results, counters

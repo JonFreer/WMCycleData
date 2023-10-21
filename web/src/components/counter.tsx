@@ -9,9 +9,9 @@ function Counter() {
   const { idenitiy } = useParams();
   const counters = useCounters();
 
-  const counter = counters.filter((x) => x.identity == Number(idenitiy))[0];
+  const counter = counters.filter((x) => x.identity === Number(idenitiy))[0];
 
-  if (counter == undefined) {
+  if (counter === undefined) {
     return <div></div>;
   }
   console.log(idenitiy);
@@ -149,11 +149,11 @@ function GraphHolder({
   var start_date: Date | null = new Date();
   start_date.setDate(start_date.getDate() - 7);
 
-  if (type == "day") {
-    if (date_selected == "today") {
+  if (type === "day") {
+    if (date_selected === "today") {
       end_date = new Date();
       start_date = new Date(new Date().setHours(0, 0, 0, 0));
-    } else if (date_selected == "default") {
+    } else if (date_selected === "default") {
       end_date = new Date(new Date().setHours(0, 0, 0, 0));
       start_date = new Date();
       start_date.setDate(new Date().getDate() - 1); //.setHours(0,0,0,0))
@@ -166,15 +166,15 @@ function GraphHolder({
     }
   }
 
-  if (type == "week") {
-    if (date_selected == "week_to_date") {
+  if (type === "week") {
+    if (date_selected === "week_to_date") {
       end_date = new Date();
       start_date = new Date();
       const today = start_date.getDate();
       const currentDay = start_date.getDay();
       start_date.setDate(today - (currentDay || 7));
       start_date.setHours(13, 0, 0, 0);
-    } else if (date_selected == "default") {
+    } else if (date_selected === "default") {
       //last week
       end_date = new Date();
       const today = end_date.getDate();
@@ -194,7 +194,7 @@ function GraphHolder({
     }
   }
 
-  if (type == "month") {
+  if (type === "month") {
     end_date = null;
     start_date = null;
   }
@@ -240,9 +240,9 @@ function DateSelectorDaily({
   setter: any;
   type: string;
 }) {
-  const [custom_date, set_custom_date] = useState<Date | null>(null);
+  // const [custom_date, set_custom_date] = useState<Date | null>(null);
 
-  if (type == "day") {
+  if (type === "day") {
     return (
       <div className={dropdown_style.multi_button_holder}>
         <div
@@ -250,7 +250,7 @@ function DateSelectorDaily({
             setter((document.getElementById("start") as HTMLInputElement).value)
           }
           className={
-            id != "today" && id != "default"
+            id !== "today" && id !== "default"
               ? `${dropdown_style.multi_button}  ${dropdown_style.picker} ${dropdown_style.left} ${dropdown_style.active}`
               : `${dropdown_style.multi_button} ${dropdown_style.picker} ${dropdown_style.left}`
           }
@@ -268,7 +268,7 @@ function DateSelectorDaily({
         <div
           onClick={() => setter("default")}
           className={
-            id == "default"
+            id === "default"
               ? `${dropdown_style.multi_button} ${dropdown_style.active}`
               : `${dropdown_style.multi_button}`
           }
@@ -279,7 +279,7 @@ function DateSelectorDaily({
         <div
           onClick={() => setter("today")}
           className={
-            id == "today"
+            id === "today"
               ? `${dropdown_style.multi_button} ${dropdown_style.right} ${dropdown_style.active}`
               : `${dropdown_style.multi_button} ${dropdown_style.right}`
           }
@@ -290,7 +290,7 @@ function DateSelectorDaily({
     );
   }
 
-  if (type == "week") {
+  if (type === "week") {
     return (
       <div className={dropdown_style.multi_button_holder}>
         <div
@@ -298,7 +298,7 @@ function DateSelectorDaily({
             setter((document.getElementById("start") as HTMLInputElement).value)
           }
           className={
-            id != "week_to_date" && id != "default"
+            id !== "week_to_date" && id !== "default"
               ? `${dropdown_style.multi_button}  ${dropdown_style.picker} ${dropdown_style.left} ${dropdown_style.active}`
               : `${dropdown_style.multi_button} ${dropdown_style.picker} ${dropdown_style.left}`
           }
@@ -316,7 +316,7 @@ function DateSelectorDaily({
         <div
           onClick={() => setter("default")}
           className={
-            id == "default"
+            id === "default"
               ? `${dropdown_style.multi_button} ${dropdown_style.active}`
               : `${dropdown_style.multi_button}`
           }
@@ -327,7 +327,7 @@ function DateSelectorDaily({
         <div
           onClick={() => setter("week_to_date")}
           className={
-            id == "week_to_date"
+            id === "week_to_date"
               ? `${dropdown_style.multi_button} ${dropdown_style.right} ${dropdown_style.active}`
               : `${dropdown_style.multi_button} ${dropdown_style.right}`
           }

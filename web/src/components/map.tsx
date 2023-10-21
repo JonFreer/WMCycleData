@@ -28,15 +28,15 @@ function Map({ identity }: { identity: number | undefined }) {
   useEffect(() => {
     if (map.current && counters.length > 0) {
       const source = map.current.getSource("counters");
-      if (source != undefined) {
+      if (source !== undefined) {
         source.setData(data2geojson(counters));
       }
     }
   });
 
   useEffect(() => {
-    if (marker != undefined) {
-      var counter = counters.filter((x) => x.identity == identity)[0];
+    if (marker !== undefined) {
+      var counter = counters.filter((x) => x.identity === identity)[0];
       (marker as maplibregl.Marker).setLngLat([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setCenter([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setZoom(16);
@@ -46,7 +46,7 @@ function Map({ identity }: { identity: number | undefined }) {
 
   // Update styling based on filter val
   useEffect(() => {
-    if (map.current != null) {
+    if (map.current !== null) {
       if (map.current._isReady) {
         map.current.setFilter("unclustered-point", [
           "all",
@@ -116,8 +116,8 @@ function Map({ identity }: { identity: number | undefined }) {
         },
       });
 
-      if (identity != undefined) {
-        var counter = counters.filter((x) => x.identity == identity)[0];
+      if (identity !== undefined) {
+        var counter = counters.filter((x) => x.identity === identity)[0];
 
         var marker = new maplibregl.Marker({
           color: "#FF3333",
@@ -133,7 +133,6 @@ function Map({ identity }: { identity: number | undefined }) {
       }
 
       map.current.on("click", "unclustered-point", function (e: any) {
-
         // Remove old popup to remove double binding onclick
         if (popup.current != null) {
           popup.current.remove();
@@ -177,8 +176,8 @@ function Map({ identity }: { identity: number | undefined }) {
       map.current.on("mousemove", "unclustered-point", (e: any) => {
         var identity = e.features[0].properties.identity;
 
-        if (popup_hover.current != null) {
-          if (identity == popup_hover.current.identity) {
+        if (popup_hover.current !== null) {
+          if (identity === popup_hover.current.identity) {
             return;
           }
           popup_hover.current.remove();
@@ -226,7 +225,7 @@ function Map({ identity }: { identity: number | undefined }) {
   return (
     <>
       <div ref={mapContainer} className={styles.mapContainer} />
-      {identity == undefined ? (
+      {identity === undefined ? (
         <Settings
           max={max}
           val={filterVal}
