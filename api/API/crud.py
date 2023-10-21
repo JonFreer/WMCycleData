@@ -171,52 +171,59 @@ def add_count_time(
     return db_submission
 
 
-def read_all_counts(
-    db: Session, limit_offset: Tuple[int, int], time_interval: str
-) -> List[models.Counts]:
-    limit, offset = limit_offset
-    # counters = db.query(models.Counts).offset(offset).limit(limit).all()
-    sql = text(
-        """SELECT time_bucket(:timeInterval, timestamp) as timestamp, 
-               mode, counter ,
-               sum(count_in) as count_in, 
-               sum(count_out) as count_out 
+# def read_all_counts(
+#     db: Session, limit_offset: Tuple[int, int], time_interval: str,modes: List[str]
+# ) -> List[models.Counts]:
+#     limit, offset = limit_offset
+#     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
+#     sql = text(
+#         """SELECT time_bucket(:timeInterval, timestamp) as timestamp, 
+#                mode, counter ,
+#                sum(count_in) as count_in, 
+#                sum(count_out) as count_out 
                
-               from counts 
-               GROUP BY 1,2,3
-               ORDER BY timestamp DESC"""
-    )
-    sql = sql.bindparams(
-        bindparam("timeInterval", value=time_interval))
-    results = db.execute(sql).all()
-    print(results)
-    return results
+#                from counts 
+#                GROUP BY 1,2,3
+#                ORDER BY timestamp DESC"""
+#     )
+#     sql = sql.bindparams(
+#         bindparam("timeInterval", value=time_interval))
+#     results = db.execute(sql).all()
+#     print(results)
+#     return results
 
 
 def read_counts(
     db: Session,
     limit_offset: Tuple[int, int],
     time_interval: str,
-    identity: int,
+    identity: int | None = None,
     start_time: int | None = None,
     end_time:int | None = None,
+    modes: List[str] | None = None,
     table: str = "counts_hourly",
 ) -> List[models.Counts]:
     limit, offset = limit_offset
 
-    sql = text(
-        """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
+    sql_string = """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
                mode, counter ,
                sum(count_in) as count_in, 
                sum(count_out) as count_out 
-               FROM """
-        + table
-        + """ 
-               WHERE counter = :identity AND timestamp > TIMESTAMPTZ :start_time
+               FROM """ + table + """
+               WHERE """
+    
+    if identity != None:
+        sql_string = sql_string +   "counter = :identity AND "
+
+    if modes != None:
+        sql_string = sql_string + "mode IN ("+",".join("'{0}'".format(x) for x in modes)+") AND "
+
+    sql_string = sql_string + """timestamp > TIMESTAMPTZ :start_time
                AND timestamp <= TIMESTAMPTZ :end_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
-    )
+
+    sql = text(sql_string)
 
     if end_time == None:
         end_time = datetime.datetime.now().timestamp()
