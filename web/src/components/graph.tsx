@@ -20,8 +20,10 @@ function Graph({
   default_end_date: Date | null;
   type: "day" | "week" | "month";
 }) {
+  console.log("RERENDER");
 
-  const [min, setMin] = useState<number>(10000000000000000);
+  const min = useRef<number>(2 ^ 53);
+  // const [min, setMin] = useState<number>(2^53);
 
   // By defualt the min and max should be set to the props
 
@@ -43,7 +45,7 @@ function Graph({
   }
 
   function getCounts(_min: number = 0, _max: number = 0) {
-    console.log(time_interval)
+    console.log(time_interval);
     const requestOptions = {
       method: "GET",
     };
@@ -55,7 +57,7 @@ function Graph({
       identity;
 
     query = query + "&start_time=" + Math.floor(_min / 1000);
-    
+
     fetch(query, requestOptions).then((response) => {
       console.log(response);
       if (response.status == 200) {
@@ -74,7 +76,9 @@ function Graph({
 
   useEffect(() => {
     if (default_start_date != undefined) {
-      getCounts(default_start_date.getTime());
+      getCounts(default_start_date.getTime() - 604800000);
+      min.current = default_start_date.getTime() - 604800000;
+      // setMin();
     } else {
       getCounts();
     }
@@ -97,21 +101,17 @@ function Graph({
       },
       events: {
         zoomed: function (chartContext, { xaxis, yaxis }) {
+          if (xaxis.min < min.current) {
+            min.current = xaxis.min - 100000000;
+            getCounts(min.current, xaxis.max);
 
-         
-
-          if(xaxis.min < min){
-            getCounts(xaxis.min, xaxis.max);
-            setMin(xaxis.min)
-            // setMax(xaxis.max)
+            chartContext.updateOptions({
+              xaxis: {
+                min: xaxis.min,
+                max: xaxis.max,
+              },
+            });
           }
-
-          chartContext.updateOptions({
-            xaxis: {
-              min: xaxis.min,
-              max: xaxis.max,
-            },
-          });
         },
       },
     },
