@@ -51,7 +51,7 @@ def read_counts(
     modes: List[str] = Query(
         None,
         description="""Mode of transport. Leave blank to return values for all modes. 
-                            List of available modes: cyclist, car, pedestrian, truck, motorbike, escooter, bus, van, rigid, taxi. """,
+                            List of available modes: cyclist, car, pedestrian, truck, motorbike, escooter, bus, van, rigid, taxi, minibus, emergency_car, emergency_van, fire_engine, cargo_bicycle, rental_bicycle. """,
     ),
     db: Session = Depends(get_db),
 ):
@@ -123,6 +123,13 @@ def check_modes(modes: List[str]):
             "van",
             "rigid",
             "taxi",
+            "minibus",
+            "emergency_car",
+            "emergency_van",
+            "fire_engine",
+            "cargo_bicycle",
+            "rental_bicycle"
+
         ]
     )
     modes_diff = set(modes) - MODES
