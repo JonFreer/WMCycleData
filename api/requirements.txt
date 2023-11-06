@@ -1,7 +1,7 @@
 fastapi==0.104.0
 itsdangerous==2.1.2
 pydantic==2.4.2
-starlette==0.27.0
+starlette==0.32.0.post1
 uvicorn==0.23.2
 autoflake==2.2.1
 black==23.10.0
