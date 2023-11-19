@@ -91,9 +91,15 @@ def load_dummy_counters(
 )
 def load_dummy_counts(
     api_key: Annotated[APIKey, Depends(auth.get_api_key)],
+    start_time: int | None,
     db: Session = Depends(get_db),
 ):
-    response = requests.get("https://wmcycledata.com/api/counts")
+    if start_time != None:
+        response = requests.get(
+            "https://wmcycledata.com/api/counts?start_time=" + str(start_time)
+        )
+    else:
+        response = requests.get("https://wmcycledata.com/api/counts")
 
     response.raise_for_status()
     counts = response.json()

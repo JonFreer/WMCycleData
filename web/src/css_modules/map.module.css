@@ -76,4 +76,33 @@
   color: var(--heading-color);
   font-size: 13px;
   float: right;
+  /* opacity: 0.5; */
+}
+
+.key_holder {
+  background: white;
+  border-radius: 4px;
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  padding: 10px;
+  font-weight: 700;
+  color: var(--heading-color);
+  font-size: 13px;
+  box-shadow: 0px 2px 3px 0px rgba(0.5, 0.5, 0.5, 0.1);
+}
+
+.key_item {
+  font-weight: 500;
+  color: var(--heading-color);
+  font-size: 13px;
+}
+
+.key_colour {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 9px;
+  margin-right: 5px;
+  border-radius: 4px;
 }

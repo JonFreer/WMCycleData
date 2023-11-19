@@ -21,7 +21,7 @@ function Map({ identity }: { identity: number | undefined }) {
   const forceUpdate = useReducer((x) => x + 1, 0)[1];
   const navigate = useNavigate();
   const [marker, setMarker] = useState<any>();
-  const max = Math.max(...counters.map((val) => val.today_count));
+  const max = Math.max(...counters.map((val) => val.last_week_count));
 
   const [filterVal, setFilterVal] = useState<number>(0);
 
@@ -35,7 +35,6 @@ function Map({ identity }: { identity: number | undefined }) {
   });
 
   useEffect(() => {
-    console.log("MARKER", marker !== undefined);
     if (marker !== undefined) {
       var counter = counters.filter((x) => x.identity === identity)[0];
       (marker as maplibregl.Marker).setLngLat([counter.lon, counter.lat]);
@@ -45,7 +44,7 @@ function Map({ identity }: { identity: number | undefined }) {
       map.current.setFilter("unclustered-point", [
         "all",
         ["!=", "identity", Number(identity)],
-        [">=", "today_count", Number(filterVal)],
+        [">=", "last_week_count", Number(filterVal)],
       ]);
     }
   }, [identity]);
@@ -57,7 +56,7 @@ function Map({ identity }: { identity: number | undefined }) {
         map.current.setFilter("unclustered-point", [
           "all",
           ["!=", "identity", Number(identity)],
-          [">=", "today_count", Number(filterVal)],
+          [">=", "last_week_count", Number(filterVal)],
         ]);
       }
     }
@@ -99,21 +98,21 @@ function Map({ identity }: { identity: number | undefined }) {
         filter: [
           "all",
           ["!=", "identity", Number(identity)],
-          [">", "today_count", filterVal],
+          [">", "last_week_count", filterVal],
         ],
         layout: {
-          "circle-sort-key": ["get", "today_count"],
+          "circle-sort-key": ["get", "last_week_count"],
         },
         paint: {
           "circle-color": [
             "interpolate",
             ["linear"],
-            ["get", "today_count"],
+            ["get", "last_week_count"],
             0,
             "#f7d756",
-            80,
+            1500,
             "#8f0da3",
-            150,
+            3000,
             "#444444",
           ],
           "circle-radius": 10,
@@ -232,11 +231,14 @@ function Map({ identity }: { identity: number | undefined }) {
     <>
       <div ref={mapContainer} className={styles.mapContainer} />
       {identity === undefined ? (
-        <Settings
-          max={max}
-          val={filterVal}
-          callback={(val: number) => setFilterVal(val)}
-        ></Settings>
+        <>
+          <Settings
+            max={max}
+            val={filterVal}
+            callback={(val: number) => setFilterVal(val)}
+          ></Settings>
+          <Key></Key>
+        </>
       ) : (
         <></>
       )}
@@ -269,6 +271,25 @@ function Settings({
           defaultValue={val}
           id="myRange"
         />
+      </div>
+    </div>
+  );
+}
+
+function Key() {
+  return (
+    <div className={styles.key_holder}>
+      Cyclists / Week
+      <div className={styles.key_item}>
+        <i style={{ background: "#444444" }} className={styles.key_colour}></i>
+        3000
+      </div>
+      <div className={styles.key_item}>
+        <i style={{ background: "#8f0da3" }} className={styles.key_colour}></i>
+        1500
+      </div>
+      <div className={styles.key_item}>
+        <i style={{ background: "#f7d756" }} className={styles.key_colour}></i>0
       </div>
     </div>
   );
