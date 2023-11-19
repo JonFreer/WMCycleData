@@ -29,6 +29,17 @@ class CounterPlus(BaseModel):
         from_attributes = True
 
 
+class WeekCounts(BaseModel):
+    day_of_week: int
+    identity: int
+    mode: str
+    count_in: float
+    count_out: float
+
+    class Config:
+        from_attributes = True
+
+
 class Count(BaseModel):
     timestamp: datetime.datetime
     counter: int

@@ -251,3 +251,73 @@ def read_counts(
 
     results = db.execute(sql).all()
     return results
+
+
+def read_average(
+    db: Session,
+    identity: int | None = None,
+    start_time: int | None = None,
+    end_time: int | None = None,
+    modes: List[str] | None = None,
+    table: str = "counts_hourly",
+) -> List[schemas.WeekCounts]:
+    sql_string = (
+        """ WITH daily_buckets AS (
+            SELECT
+                time_bucket('1 day' , timestamp) as timestamp,
+                EXTRACT(ISODOW FROM timestamp) AS day_of_week,
+                mode, counter,
+                sum(count_in) AS count_in,
+                sum(count_out) AS count_out
+                FROM """
+        + table
+        + """
+               WHERE """
+    )
+
+    if identity != None:
+        sql_string = sql_string + "counter = :identity AND "
+
+    if modes != None:
+        sql_string = (
+            sql_string
+            + "mode IN ("
+            + ",".join("'{0}'".format(x) for x in modes)
+            + ") AND "
+        )
+
+    sql_string = (
+        sql_string
+        + """timestamp > TIMESTAMPTZ :start_time
+               AND timestamp <= TIMESTAMPTZ :end_time
+               GROUP BY 1,2,3,4
+               ORDER BY 2
+               )
+               
+               SELECT 
+                day_of_week, counter as identity, mode,
+                AVG(count_in) AS count_in,
+                AVG(count_out) AS count_out
+                FROM
+                daily_buckets
+                GROUP BY
+                day_of_week, mode, counter
+                ORDER BY
+                day_of_week;
+               """
+    )
+
+    sql = text(sql_string)
+
+    if end_time == None:
+        end_time = datetime.datetime.now().timestamp()
+    if start_time == None:
+        start_time = 0
+
+    sql = sql.bindparams(
+        bindparam("identity", value=identity),
+        bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
+        bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
+    )
+    results = db.execute(sql).all()
+    return results

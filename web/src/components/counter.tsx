@@ -5,6 +5,8 @@ import Graph from "./graph";
 import { useCounters } from "../App";
 import { useState } from "react";
 import Map from "./map";
+import WeekGraphHolder from "./weekGraph";
+
 function Counter() {
   const { idenitiy } = useParams();
   const counters = useCounters();
@@ -100,13 +102,15 @@ function Counter() {
           identity={counter.identity}
         ></GraphHolder>
 
-        <GraphHolder
+        <WeekGraphHolder identity={counter.identity}></WeekGraphHolder>
+
+        {/* <GraphHolder
           type={"week"}
           default_chart_style={"bar"}
           default_time_interval={"1 day"}
           title={"Weekly Overview"}
           identity={counter.identity}
-        ></GraphHolder>
+        ></GraphHolder> */}
 
         <GraphHolder
           type={"month"}

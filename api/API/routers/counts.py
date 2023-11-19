@@ -72,6 +72,47 @@ def read_counts(
     )
 
 
+@router.get(
+    "/average_week/", response_model=List[schemas.WeekCounts], tags=["counters"]
+)
+def AverageWeek(
+    response: Response,
+    identity: int | None = None,
+    start_time: Annotated[
+        int | None,
+        Query(
+            title="Start Time", description="Start timestamp of data. Defaults to zero."
+        ),
+    ] = None,
+    end_time: Annotated[
+        int | None,
+        Query(
+            title="End Time",
+            description="End timestamp of data. Defaults to current time.",
+        ),
+    ] = None,
+    modes: List[str] = Query(
+        None,
+        description="""Mode of transport. Leave blank to return values for all modes. 
+                            List of available modes: cyclist, car, pedestrian, truck, motorbike, escooter, bus, van, rigid, taxi, minibus, emergency_car, emergency_van, fire_engine, cargo_bicycle, rental_bicycle. """,
+    ),
+    db: Session = Depends(get_db),
+):
+    # validate.check_limit(limit)
+    response.headers["X-Total-Count"] = str(5)
+
+    if modes != None:
+        check_modes(modes)
+
+    return crud.read_average(
+        db,
+        identity=identity,
+        start_time=start_time,
+        end_time=end_time,
+        modes=modes,
+    )
+
+
 # Returns all the counters plus key stats
 @router.get(
     "/counters_plus/", response_model=List[schemas.CounterPlus], tags=["counters"]
@@ -128,8 +169,7 @@ def check_modes(modes: List[str]):
             "emergency_van",
             "fire_engine",
             "cargo_bicycle",
-            "rental_bicycle"
-
+            "rental_bicycle",
         ]
     )
     modes_diff = set(modes) - MODES

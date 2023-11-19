@@ -35,12 +35,18 @@ function Map({ identity }: { identity: number | undefined }) {
   });
 
   useEffect(() => {
+    console.log("MARKER", marker !== undefined);
     if (marker !== undefined) {
       var counter = counters.filter((x) => x.identity === identity)[0];
       (marker as maplibregl.Marker).setLngLat([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setCenter([counter.lon, counter.lat]);
       (map.current as maplibregl.Map).setZoom(16);
-      (map.current as maplibregl.Map).removeLayer("unclustered-point");
+      // (map.current as maplibregl.Map).removeLayer("unclustered-point");
+      map.current.setFilter("unclustered-point", [
+        "all",
+        ["!=", "identity", Number(identity)],
+        [">=", "today_count", Number(filterVal)],
+      ]);
     }
   }, [identity]);
 
