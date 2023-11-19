@@ -1,4 +1,4 @@
-FROM python:3.11 as main
+FROM python:3.12 as main
 
 ENV FORWARDED_ALLOW_IPS="*"
 
