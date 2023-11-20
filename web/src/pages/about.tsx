@@ -7,7 +7,7 @@ function About() {
       {/* <h2 className={styles.subtitle}>Subtitle</h2> */}
       <div className={styles.about_box_holder}>
         <div className={styles.about_box}>
-          <a className={styles.about_box_a}>
+          {/* <a className={styles.about_box_a}> */}
             <div>
               <p className={styles.about_box_paragraph}>
                 Welcome to WMCycleData.com, a website dedicated to presenting
@@ -31,11 +31,11 @@ function About() {
                 West Midlands, one statistic at a time.
               </p>
             </div>
-          </a>
+          {/* </a> */}
         </div>
 
         <div className={styles.about_box}>
-          <a className={styles.about_box_a}>
+          <a className={styles.about_box_non_a}>
             <div>
               <h3 className={styles.about_box_heading}>
                 <div className={styles.beta}>Beta</div>
@@ -49,6 +49,36 @@ function About() {
               </p>
             </div>
           </a>
+        </div>
+
+        <div className={styles.about_box}>
+          <div className={styles.about_box_non_a}>
+            <div>
+              <h3 className={styles.about_box_heading}>
+                FAQ
+              </h3>
+              <p className={styles.about_box_paragraph}>
+                  <h4>Where does the data come from?</h4>
+                  All of the data is supplied by Transport For West Midlands. We store the data provided by TFWM and provide tools to visualise the data.
+
+                  <h4>What is a counter?</h4>
+                  TFWM uses Vivacity AI Cameras to perform traffic counting. These cameras count the incoming and outgoing traffic of their frames, classifying by a variety of modes such as car, cyclist and pedestrian.
+                  Often a single camera can be used to count traffic across multiple areas, displayed in our tool as multiple counters.
+
+                  <h4>Is the data accurate?</h4>
+                  As with all automated counting methods there is a margin of error. Based on Vivacity's own documentation they state that their counters when evaluated against manual testing can undercount by as much as 20%. 
+                  Furthermore we often see spikes in the data which do not correlate with expected traffic flow. We have taken the decision not to remove anomalies from the data and present the data as is.
+
+                  <h4>Can I download the data?</h4>
+
+                  We provide an API which allows querying of all our data. If you plan to download large amounts of data, please contact me at contact@douvk.co.uk and I can provide a dump.
+
+                  <h4>I have more questions</h4>
+                  
+                  Feel free to contact me at contact@douvk.co.uk or <a href="https://twitter.com/JonathanFreer">@JonathanFreer</a> on Twitter.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className={styles.about_box}>

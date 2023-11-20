@@ -25,18 +25,35 @@
   padding-bottom: 32px !important;
 }
 
-.about_box_a {
-  cursor: pointer;
+
+
+.about_box_non_a {
+  /* cursor: pointer; */
   background-color: #f0f8ff;
   display: flex !important;
   border-radius: 7px;
-  text-decoration: none;
+  /* text-decoration: def; */
+  padding: 32px;
+  color: black;
+  overflow: hidden;
+}
+
+.about_box_non_a a{
+  text-decoration: underline;
+}
+
+.about_box_a {
+  /* cursor: pointer; */
+  background-color: #f0f8ff;
+  display: flex !important;
+  border-radius: 7px;
+  /* text-decoration: none; */
   padding: 32px;
   color: black;
   overflow: hidden;
 }
 .about_box_a:visited {
-  text-decoration: none;
+  /* text-decoration: none; */
 }
 
 .about_box_a:hover {
