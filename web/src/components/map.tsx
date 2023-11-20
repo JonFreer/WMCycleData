@@ -110,10 +110,14 @@ function Map({ identity }: { identity: number | undefined }) {
             ["get", "last_week_count"],
             0,
             "#f7d756",
-            1500,
+            500,
+            "#F2845C",
+            1000,
             "#8f0da3",
-            3000,
-            "#444444",
+            2000,
+            "#5700A4",
+            4000,
+            "#444444"
           ],
           "circle-radius": 10,
           "circle-stroke-width": 1,
@@ -259,8 +263,8 @@ function Settings({
     <div className={styles.settings_holder}>
       <div className={styles.settings}>
         <div className={styles.settings_header}>
-          <span className={styles.settings_header_left}>Min Count</span>
-          <span className={styles.settings_header_right}>{val}</span>
+          <span className={styles.settings_header_left}>Filter Counters</span>
+          <span className={styles.settings_header_right}>{val} / Week</span>
         </div>
         <input
           onChange={(val) => callback(val.target.value)}
@@ -279,17 +283,26 @@ function Settings({
 function Key() {
   return (
     <div className={styles.key_holder}>
-      Cyclists / Week
+      Cyclists /w
       <div className={styles.key_item}>
         <i style={{ background: "#444444" }} className={styles.key_colour}></i>
-        3000
+        4000
+      </div>
+      <div className={styles.key_item}>
+        <i style={{ background: "#5700A4" }} className={styles.key_colour}></i>
+        2000
       </div>
       <div className={styles.key_item}>
         <i style={{ background: "#8f0da3" }} className={styles.key_colour}></i>
-        1500
+        1000
       </div>
       <div className={styles.key_item}>
-        <i style={{ background: "#f7d756" }} className={styles.key_colour}></i>0
+        <i style={{ background: "#F2845C" }} className={styles.key_colour}></i>
+        500
+      </div>
+      <div className={styles.key_item}>
+        <i style={{ background: "#f7d756" }} className={styles.key_colour}></i>
+        0
       </div>
     </div>
   );

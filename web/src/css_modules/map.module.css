@@ -44,6 +44,7 @@
   position: absolute;
   width: 100vw;
   bottom: 20px;
+  z-index: 3;
 }
 
 .settings {
