@@ -68,7 +68,7 @@ function About() {
             </div>
             <img
               className={styles.about_box_image}
-              src={process.env.PUBLIC_URL + "/about/api.png"}
+              src={"/about/api.png"}
             ></img>
           </a>
         </div>
@@ -89,7 +89,7 @@ function About() {
             </div>
             <img
               className={styles.about_box_image}
-              src={process.env.PUBLIC_URL + "/about/github.png"}
+              src={"/about/github.png"}
             ></img>
           </a>
         </div>
