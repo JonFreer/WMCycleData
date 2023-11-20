@@ -15,7 +15,7 @@ RUN npm run build
 # stage: prod
 FROM nginx:latest AS prod
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build/ /usr/share/nginx/html/
+COPY --from=builder /app/dist/ /usr/share/nginx/html/
 
 # stage: dev
 FROM dependencies AS dev
