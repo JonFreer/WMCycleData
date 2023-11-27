@@ -192,6 +192,37 @@ def add_count_time(
 #     print(results)
 #     return results
 
+def get_first_timestamp(
+    db: Session,
+    identity: int | None = None,
+    modes: List[str] | None = None,
+    table: str = "counts_hourly",
+) -> datetime:
+    
+    time_string = (
+            """SELECT first(timestamp,timestamp) FROM """
+            + table
+            + """
+                WHERE """
+        )
+
+    if identity != None:
+        time_string = time_string + "counter = :identity AND "
+
+    if modes != None:
+        time_string = (
+            time_string
+            + "mode IN ("
+            + ",".join("'{0}'".format(x) for x in modes)
+            + ")"
+        )
+
+    sql = text(time_string)
+    sql = sql.bindparams(
+        bindparam("identity", value=identity),
+    )
+
+    return db.execute(sql).all()[0][0]
 
 def read_counts(
     db: Session,
@@ -205,11 +236,16 @@ def read_counts(
 ) -> List[models.Counts]:
     limit, offset = limit_offset
 
+    if start_time == None:
+        start_time = get_first_timestamp(db,identity,modes,table).timestamp()
+   
+    #If start time is None, and we want gapfill, then we need to first query to find the first item and then gapfill from there
+
     sql_string = (
-        """SELECT time_bucket(:timeInterval , timestamp) as timestamp, 
+        """SELECT time_bucket_gapfill(:timeInterval , timestamp) as timestamp, 
                mode, counter ,
-               sum(count_in) as count_in, 
-               sum(count_out) as count_out 
+               CASE WHEN sum(count_in) IS NULL THEN 0 ELSE sum(count_in) END AS count_in,
+               CASE WHEN sum(count_out) IS NULL THEN 0 ELSE sum(count_out) END AS count_out
                FROM """
         + table
         + """
@@ -229,8 +265,7 @@ def read_counts(
 
     sql_string = (
         sql_string
-        + """timestamp > TIMESTAMPTZ :start_time
-               AND timestamp <= TIMESTAMPTZ :end_time
+        + """timestamp > TIMESTAMPTZ :start_time AND timestamp <= TIMESTAMPTZ :end_time
                GROUP BY 1,2,3
                ORDER BY timestamp DESC"""
     )
@@ -239,9 +274,7 @@ def read_counts(
 
     if end_time == None:
         end_time = datetime.datetime.now().timestamp()
-    if start_time == None:
-        start_time = 0
-
+    
     sql = sql.bindparams(
         bindparam("timeInterval", value=time_interval),
         bindparam("identity", value=identity),

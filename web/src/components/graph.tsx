@@ -133,10 +133,12 @@ function Graph({
     let query =
       "/api/counts/?time_interval=" +
       encodeURIComponent(time_interval) +
-      "&identity=" +
-      identity;
+      "&modes=cyclist&modes=pedestrian&modes=escooter&modes=car&modes=bus" +
+      "&identity=" + identity;
 
-    query = query + "&start_time=" + Math.floor(_min / 1000);
+    if(_min>0){
+      query = query + "&start_time=" + Math.floor(_min / 1000);
+    }
 
     fetch(query, requestOptions).then((response) => {
       console.log(response);
