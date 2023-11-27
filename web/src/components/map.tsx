@@ -166,9 +166,9 @@ function Map({ identity }: { identity: number | undefined }) {
                 <div className={styles.popup_text_main}> {last_week_count}</div>
               </div>
             </div>
-            <div id="popup_button" className={styles.popup_button}>
+            <a href={"/counter/" + identity} id="popup_button" className={styles.popup_button}>
               More Data ...
-            </div>
+            </a>
           </>
         );
 
@@ -176,11 +176,8 @@ function Map({ identity }: { identity: number | undefined }) {
           .setLngLat([coordinates[0], coordinates[1]])
           .setHTML(html)
           .addTo(map.current);
-
-        document
-          .getElementById("popup_button")
-          ?.addEventListener("click", () => navigate("/counter/" + identity));
-      });
+          
+        });
 
       map.current.on("mousemove", "unclustered-point", (e: any) => {
         var identity = e.features[0].properties.identity;
