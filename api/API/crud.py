@@ -218,9 +218,11 @@ def get_first_timestamp(
         )
 
     sql = text(time_string)
-    sql = sql.bindparams(
-        bindparam("identity", value=identity),
-    )
+
+    if identity != None:
+        sql = sql.bindparams(
+            bindparam("identity", value=identity),
+        )
 
     return db.execute(sql).all()[0][0]
 
