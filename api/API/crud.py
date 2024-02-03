@@ -277,10 +277,14 @@ def read_counts(
     
     sql = sql.bindparams(
         bindparam("timeInterval", value=time_interval),
-        bindparam("identity", value=identity),
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
         bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
     )
+
+    if identity != None:
+        sql = sql.bindparams(
+            bindparam("identity", value=identity),
+        )
 
     results = db.execute(sql).all()
     return results
