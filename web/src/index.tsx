@@ -9,6 +9,7 @@ import About from "./pages/about";
 import Counter from "./components/counter";
 import Counters from "./pages/counters";
 import Main from "./pages/main";
+import Collisions from "./pages/collisions";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "counter/:idenitiy",
         element: <Counter />,
+      },
+      {
+        path: "collisions",
+        element: <Collisions />,
       },
       {
         path: "/about",

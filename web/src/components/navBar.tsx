@@ -10,6 +10,10 @@ class NavBar extends React.Component<{}, {}> {
           <div className={styles.beta}>Beta</div>
         </Link>
 
+        {/* <Link className={styles.link} to="/collisions">
+          Collisions
+        </Link> */}
+
         <Link className={styles.link} to="/counters">
           Counters
         </Link>
