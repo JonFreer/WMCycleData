@@ -19,7 +19,6 @@ function Graph({
   default_end_date: Date | null;
   type: "day" | "week" | "month";
 }) {
-  console.log("RERENDER");
 
   const min = useRef<number>(2 ^ 53);
   const hidden_state = useRef<any>({
@@ -124,7 +123,6 @@ function Graph({
   }
 
   function getCounts(_min: number = 0, _max: number = 0) {
-    console.log(time_interval);
 
     const requestOptions = {
       method: "GET",
@@ -141,10 +139,8 @@ function Graph({
     }
 
     fetch(query, requestOptions).then((response) => {
-      console.log(response);
       if (response.status === 200) {
         response.json().then((data: Count[]) => {
-          console.log(data);
 
           let filtered = data.filter(
             (x) => x.counter === identity //&& x.mode === "cyclist"

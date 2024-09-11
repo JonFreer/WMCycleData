@@ -12,10 +12,8 @@ function App() {
       method: "GET",
     };
     fetch("/api/counters_plus/", requestOptions).then((response) => {
-      console.log(response);
       if (response.status === 200) {
         response.json().then((data: CounterPlus[]) => {
-          console.log(data);
           data = data.sort((a, b) => b.this_week_count - a.this_week_count);
           setCounters(data);
         });

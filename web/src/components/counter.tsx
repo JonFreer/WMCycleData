@@ -16,7 +16,6 @@ function Counter() {
   if (counter === undefined) {
     return <div></div>;
   }
-  console.log(idenitiy);
 
   var prevMonday = new Date();
   prevMonday.setDate(
