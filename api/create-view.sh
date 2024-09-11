@@ -1,3 +1,6 @@
+INSERT INTO counts(counter,timestamp,mode,count_in,count_out) SELECT counter,timestamp,mode,count_in,count_out FROM counts_hourly;
+
+
 CREATE MATERIALIZED VIEW counts_daily
 WITH (timescaledb.continuous) AS
 SELECT
@@ -19,14 +22,18 @@ FROM counts_daily
 GROUP BY 1,2,3;
 
 SELECT add_continuous_aggregate_policy('counts_daily',
-  start_offset => INTERVAL '4 days',
+  start_offset => INTERVAL '2 days',
   end_offset => NULL,
-  schedule_interval => INTERVAL '6 hours');
+  schedule_interval => INTERVAL '12 hours');
 
-SELECT add_continuous_aggregate_policy('conditions_weekly',
+SELECT add_continuous_aggregate_policy('counts_weekly',
   start_offset => INTERVAL '1 month',
   end_offset => NULL,
-  schedule_interval => INTERVAL '1 day');
+  schedule_interval => INTERVAL '7 days');
+
+#Real Time aggreagtion
+ALTER MATERIALIZED VIEW counts_daily set (timescaledb.materialized_only = false);
+ALTER MATERIALIZED VIEW counts_weekly set (timescaledb.materialized_only = false);
 
 # SELECT add_continuous_aggregate_policy('counts_hourly',
 #   start_offset => INTERVAL '4 hours',
@@ -39,3 +46,7 @@ SELECT add_continuous_aggregate_policy('conditions_weekly',
 #   schedule_interval => INTERVAL '1 day');
 
 # SELECT add_retention_policy('counts', INTERVAL '30 days');
+
+CALL refresh_continuous_aggregate('counts_hourly');
+
+ALTER TABLE counts RENAME TO counts_backup; 
