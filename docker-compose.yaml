@@ -62,7 +62,12 @@ services:
     networks:
       - internal_network
       - traefik_web
-
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+        
 networks:
   traefik_web:
     external:
