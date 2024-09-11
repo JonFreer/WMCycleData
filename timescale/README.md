@@ -1,6 +1,8 @@
 ## Timescale
 
-There are 3 core tables COUNTS, COUNTERS and COUNTS_HOURLY
+There are 3 core tables COUNTS, COUNTERS, COUNTS_DAILY and COUNTS_WEEKLY
+
+Data is now aggregated hourly in the counts table
 
 The COUNTERS table stores:
 - Identity: the unique vivacity id of the table
