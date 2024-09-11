@@ -32,8 +32,8 @@ jobs:
       - name: Start docker containers
         run: |
           echo "VERSION=$(versioninfo)" >> $GITHUB_ENV
-          docker-compose -f docker-compose-test.yaml build 
-          docker-compose -f docker-compose-test.yaml up --detach db 
+          docker compose -f docker-compose-test.yaml build 
+          docker compose -f docker-compose-test.yaml up --detach db 
           sleep 10  # wait for database to be ready
         #   docker-compose -f tests-docker-compose.yml run backend bash -c "rails db:create && rails db:migrate && rails db:seed"
 
@@ -56,11 +56,11 @@ jobs:
 
       - name: Build docker containers
         run: |
-            docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml build
+            docker compose -f docker-compose.yaml -f docker-compose.dev.yaml build
 
       - name: RUN docker containers
         run: |
-            docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+            docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
             sleep 20
-            docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml stop
+            docker compose -f docker-compose.yaml -f docker-compose.dev.yaml stop
           
