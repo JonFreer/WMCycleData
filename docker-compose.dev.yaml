@@ -72,3 +72,5 @@ networks:
   traefik_web:
     external:
       false
+  internal_network:
+    internal: true

@@ -171,27 +171,6 @@ def add_count_time(
     return db_submission
 
 
-# def read_all_counts(
-#     db: Session, limit_offset: Tuple[int, int], time_interval: str,modes: List[str]
-# ) -> List[models.Counts]:
-#     limit, offset = limit_offset
-#     # counters = db.query(models.Counts).offset(offset).limit(limit).all()
-#     sql = text(
-#         """SELECT time_bucket(:timeInterval, timestamp) as timestamp,
-#                mode, counter ,
-#                sum(count_in) as count_in,
-#                sum(count_out) as count_out
-
-#                from counts
-#                GROUP BY 1,2,3
-#                ORDER BY timestamp DESC"""
-#     )
-#     sql = sql.bindparams(
-#         bindparam("timeInterval", value=time_interval))
-#     results = db.execute(sql).all()
-#     print(results)
-#     return results
-
 def get_first_timestamp(
     db: Session,
     identity: int | None = None,
@@ -200,11 +179,7 @@ def get_first_timestamp(
 ) -> datetime:
     
     time_string = (
-            """SELECT first(timestamp,timestamp) FROM """
-            + table
-            + """
-                WHERE """
-        )
+            """SELECT first(timestamp,timestamp) FROM {} WHERE """).format(table)
 
     if identity != None:
         time_string = time_string + "counter = :identity AND "
@@ -212,9 +187,7 @@ def get_first_timestamp(
     if modes != None:
         time_string = (
             time_string
-            + "mode IN ("
-            + ",".join("'{0}'".format(x) for x in modes)
-            + ")"
+            + "mode IN ({})".format(",".join("'{0}'".format(x) for x in modes))
         )
 
     sql = text(time_string)
@@ -234,9 +207,19 @@ def read_counts(
     start_time: int | None = None,
     end_time: int | None = None,
     modes: List[str] | None = None,
-    table: str = "counts_hourly",
+    table: str | None = None,
 ) -> List[models.Counts]:
     limit, offset = limit_offset
+
+    if table == None:
+        if "day" in time_interval or "month" in time_interval or "year" in time_interval:
+            table = "counts_daily"
+        elif "week" in time_interval:
+            table = "counts_weekly"
+        else:
+            table = "counts"
+
+    print("Reading Counts from table:", table,time_interval)
 
     if start_time == None:
         start_time = get_first_timestamp(db,identity,modes,table).timestamp()
@@ -244,14 +227,13 @@ def read_counts(
     #If start time is None, and we want gapfill, then we need to first query to find the first item and then gapfill from there
 
     sql_string = (
-        """SELECT time_bucket_gapfill(:timeInterval , timestamp) as timestamp, 
+        """
+  
+        SELECT time_bucket_gapfill(:timeInterval , timestamp) as timestamp, 
                mode, counter ,
                CASE WHEN sum(count_in) IS NULL THEN 0 ELSE sum(count_in) END AS count_in,
                CASE WHEN sum(count_out) IS NULL THEN 0 ELSE sum(count_out) END AS count_out
-               FROM """
-        + table
-        + """
-               WHERE """
+               FROM {} WHERE """.format(table)
     )
 
     if identity != None:
@@ -267,9 +249,9 @@ def read_counts(
 
     sql_string = (
         sql_string
-        + """timestamp > TIMESTAMPTZ :start_time AND timestamp <= TIMESTAMPTZ :end_time
+        + """  timestamp > TIMESTAMPTZ :start_time AND timestamp <= TIMESTAMPTZ :end_time
                GROUP BY 1,2,3
-               ORDER BY timestamp DESC"""
+               ORDER BY timestamp DESC""" #timestamp > TIMESTAMPTZ :start_time AND
     )
 
     sql = text(sql_string)
@@ -281,6 +263,7 @@ def read_counts(
         bindparam("timeInterval", value=time_interval),
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
         bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
+        # bindparam("table", value=table),
     )
 
     if identity != None:
@@ -298,55 +281,35 @@ def read_average(
     start_time: int | None = None,
     end_time: int | None = None,
     modes: List[str] | None = None,
-    table: str = "counts_hourly",
+    table: str = "counts_daily",
 ) -> List[schemas.WeekCounts]:
-    sql_string = (
-        """ WITH daily_buckets AS (
-            SELECT
-                time_bucket('1 day' , timestamp) as timestamp,
-                EXTRACT(ISODOW FROM timestamp) AS day_of_week,
-                mode, counter,
-                sum(count_in) AS count_in,
-                sum(count_out) AS count_out
-                FROM """
-        + table
-        + """
-               WHERE """
-    )
+    
+    where_string = ""
 
     if identity != None:
-        sql_string = sql_string + "counter = :identity AND "
+        where_string =  "AND counter = :identity "
 
     if modes != None:
-        sql_string = (
-            sql_string
-            + "mode IN ("
-            + ",".join("'{0}'".format(x) for x in modes)
-            + ") AND "
-        )
+        where_string = (where_string + " AND mode IN ({})").format( ",".join("'{0}'".format(x) for x in modes))
+      
 
-    sql_string = (
-        sql_string
-        + """timestamp > TIMESTAMPTZ :start_time
-               AND timestamp <= TIMESTAMPTZ :end_time
-               GROUP BY 1,2,3,4
-               ORDER BY 2
-               )
-               
-               SELECT 
-                day_of_week, counter as identity, mode,
+    sql = ("""
+            SELECT
+                EXTRACT(ISODOW FROM timestamp) AS day_of_week, 
+                counter as identity,
+                mode,
                 AVG(count_in) AS count_in,
                 AVG(count_out) AS count_out
-                FROM
-                daily_buckets
-                GROUP BY
-                day_of_week, mode, counter
-                ORDER BY
-                day_of_week;
-               """
-    )
+            FROM
+                counts_daily
+            WHERE timestamp > TIMESTAMPTZ :start_time
+               AND timestamp <= TIMESTAMPTZ :end_time {}
+            GROUP BY
+                counter,mode,day_of_week
+            ORDER BY
+                day_of_week;""").format(where_string)
 
-    sql = text(sql_string)
+    sql = text(sql)
 
     if end_time == None:
         end_time = datetime.datetime.now().timestamp()

@@ -8,13 +8,13 @@ class Vivacity:
     def get_results(api_key, start_time, end_time, identity):
         if identity == None:
             response = requests.get(
-                "https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&NullDataPoints=false".format(
+                "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&period=hour&EndPeriod=hour&meta=true".format(
                     api_key, start_time
                 )
             )
         else:
             response = requests.get(
-                "https://tfwm.onl/vivacity.json?ApiKey={}&earliest={}&NullDataPoints=false&identity={}".format(
+                    "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
                     api_key, start_time, identity
                 )
             )
@@ -34,36 +34,27 @@ class Vivacity:
                 continue
 
             location = data.get("Location", {}).get("kids", {})
-            valid_location = location and location.get("Start") is not None
-            valid_location = valid_location and location.get("Centre") is not None
-            valid_location = valid_location and location.get("End") is not None
+            valid_location = location.get("Centre") is not None
 
             if not valid_location:
                 continue
 
-            date_string = data.get("Dates", {}).get("kids", {}).get("From")
-
-            count = data.get("Counts", {}).get("kids", {})
-
-            date_time = datetime.datetime.strptime(
-                date_string, "%Y-%m-%d %H:%M:%S"
-            )  # Get Unix time
+            date_string = data.get("Date").get("value")
+            count_in = data.get("CountIn")
+            count_out = data.get("CountOut")
 
             out.append(
                 {
                     "timestamp": datetime.datetime.strptime(
-                        date_string, "%Y-%m-%d %H:%M:%S"
+                        date_string, "%Y-%m-%d %H"
                     ),
-                    "counts": data.get("Counts", {}).get("kids", {}),
+                    "counts": {"In":count_in,"Out" : count_out},
                     "mode": data.get("Class", {}),
                     "identity": data.get("Identity", {}),
                 }
             )
 
-            counters[int(data.get("Identity", {}))] = (
-                data.get("Location", {}).get("kids", {}).get("Centre", {})
-            )
-
+            counters[int(data.get("Identity", {}))] =  data.get("Location", {}).get("kids", {}).get("Centre", {})
         return out, counters
 
     def get_counts(api_key, delta_t, identity=None):

@@ -35,7 +35,6 @@ services:
       - traefik_web
 
   api:
-
     build:
       context: ./api
       target: prod
@@ -61,8 +60,8 @@ services:
       VIVACITY_KEY: "${VIVACITY_KEY}"
       EXTERNAL_API_TOKEN: "${EXTERNAL_API_TOKEN}"
     networks:
-      - traefik_web
       - internal_network
+      - traefik_web
 
 networks:
   traefik_web:
