@@ -39,7 +39,7 @@ jobs:
 
       - name: Run backend unit and integration tests
         run: |
-          docker-compose -f docker-compose-test.yaml up api
+          docker compose -f docker-compose-test.yaml up api
   buildAndRun:
     runs-on: ubuntu-latest
     env:
