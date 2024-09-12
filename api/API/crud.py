@@ -151,15 +151,33 @@ def add_count_time(
 ) -> models.Counts:
     # # Validate if the counter is valid
 
-    db_submission = models.Counts(
-        timestamp=time,
-        mode=mode,
-        count_in=count_in,
-        count_out=count_out,
-        counter=counter_identity,
+    sql_text = """INSERT INTO counts
+                    VALUES (:counter, TIMESTAMPTZ :timestamp, :mode, :count_in, :count_out)
+                    ON CONFLICT (timestamp, counter, mode) DO UPDATE
+                    SET count_in = excluded.count_in,
+                    count_out = excluded.count_out;"""
+    
+    sql = text(sql_text)
+    
+    sql = sql.bindparams(
+        bindparam("counter", value=counter_identity),
+        bindparam("timestamp", value=time),
+        bindparam("mode", value=mode),
+        bindparam("count_in", value=count_in),
+        bindparam("count_out", value=count_out),
     )
-    db.merge(db_submission)
-    db.commit()
+
+    db.execute(sql)
+
+    # db_submission = models.Counts(
+    #     timestamp=time,
+    #     mode=mode,
+    #     count_in=count_in,
+    #     count_out=count_out,
+    #     counter=counter_identity,
+    # )
+    # db.merge(db_submission)
+    # db.commit()
 
     # query = (
     #     db.query(models.Counts)
