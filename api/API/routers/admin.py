@@ -104,19 +104,21 @@ def load_dummy_counts(
     response.raise_for_status()
     counts = response.json()
 
-    for count in counts:
-        # print(counter)
-        try:
-            crud.add_count_time(
-                db,
-                count["counter"],
-                count["count_in"],
-                count["count_out"],
-                count["timestamp"],
-                count["mode"],
-            )
-        except:
-            pass
+    crud.add_count_time_bulk(counts)
+
+    # for count in counts:
+    #     # print(counter)
+    #     try:
+    #         crud.add_count_time(
+    #             db,
+    #             count["counter"],
+    #             count["count_in"],
+    #             count["count_out"],
+    #             count["timestamp"],
+    #             count["mode"],
+    #         )
+    #     except:
+    #         pass
 
     return Response(status_code=status.HTTP_201_CREATED)
 
@@ -140,12 +142,13 @@ def load_vivacity(
         ),
     ] = None,
     delta_t: int = (4 * 60 * 60),
+    end_t: int | None = None,
     db: Session = Depends(get_db),
 ):
     counters = crud.read_counters(db, [None, 0])
 
     results, counters_vivacity = vivacity.Vivacity.get_counts(
-        config.VivacityKey, delta_t, identity
+        config.VivacityKey, delta_t, identity, end_t
     )
 
     # Add any new counters to the counters table
@@ -165,8 +168,10 @@ def load_vivacity(
             "",
         )
 
+    # crud.add_count_time_bulk(db=db,counts=results)
     for count in results:
         print(count)
+        
         crud.add_count_time(
             db,
             count["identity"],

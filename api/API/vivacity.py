@@ -8,14 +8,14 @@ class Vivacity:
     def get_results(api_key, start_time, end_time, identity):
         if identity == None:
             response = requests.get(
-                "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&period=hour&EndPeriod=hour&meta=true".format(
-                    api_key, start_time
+                "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true".format(
+                    api_key, start_time, end_time
                 )
             )
         else:
             response = requests.get(
-                    "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
-                    api_key, start_time, identity
+                    "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
+                    api_key, start_time, end_time, identity
                 )
             )
         response.raise_for_status()
@@ -57,8 +57,13 @@ class Vivacity:
             counters[int(data.get("Identity", {}))] =  data.get("Location", {}).get("kids", {}).get("Centre", {})
         return out, counters
 
-    def get_counts(api_key, delta_t, identity=None):
-        time = int(datetime.datetime.now().timestamp()) - delta_t
-        results = Vivacity.get_results(api_key, time, "now", identity)
+    def get_counts(api_key, delta_t, identity=None, end_t=None):
+        if end_t != None:
+            start_time = end_t - delta_t
+        else: 
+            start_time = int(datetime.datetime.now().timestamp()) - delta_t
+            end_t = int(datetime.datetime.now().timestamp()) 
+
+        results = Vivacity.get_results(api_key, start_time, end_t, identity)
         filtered_results, counters = Vivacity.filter_results(results)
         return filtered_results, counters

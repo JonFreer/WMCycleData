@@ -51,6 +51,8 @@ services:
       - "traefik.http.middlewares.strip_api.stripprefix.prefixes=/api"
       - "traefik.http.routers.cc_api.middlewares=strip_api"
       - "ofelia.enabled=true"
+      - "ofelia.job-exec.back_load.schedule=@every 1h"
+      - "ofelia.job-exec.back_load.command=sh schedule_scripts/back_load.sh"
       - "ofelia.job-exec.datecron.schedule=@every 1h"
       - "ofelia.job-exec.datecron.command=sh schedule_scripts/hourly_load.sh"
     environment:
@@ -67,6 +69,18 @@ services:
       options:
         max-size: "100m"
         max-file: "5"
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    depends_on:
+      - api    
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "./data/ofelia:/log"
+    labels:
+        ofelia.save-folder: "/log"
+        ofelia.save-only-on-error: "false"
         
 networks:
   traefik_web:

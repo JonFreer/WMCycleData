@@ -101,7 +101,7 @@ def create_counter_summary(
     db.refresh(counter_summary)
     return counter_summary
 
-
+# This may be redundant, think about moving
 def add_count(
     db: Session, counter: str, count_in: int, count_out: int
 ) -> models.Counts:
@@ -123,6 +123,23 @@ def add_count(
 
     return db_submission
 
+def add_count_time_bulk(
+    db: Session,
+    counts: list
+) -> models.Counts:
+
+    insert_obj = []
+    for count in counts:
+        insert_obj.append(models.Counts(
+            timestamp=count["timestamp"],
+            mode=count["mode"],
+            count_in=count["counts"]["In"],
+            count_out=count["counts"]["Out"],
+            counter=count["identity"],
+        ))
+
+    db.bulk_save_objects(insert_obj)
+    db.commit()
 
 def add_count_time(
     db: Session,
@@ -133,42 +150,44 @@ def add_count_time(
     mode: str,
 ) -> models.Counts:
     # # Validate if the counter is valid
-    # res = (
-    #     db.query(models.Counter)
-    #     .where(models.Counter.identity == counter_identity)
-    #     .all()
-    # )
-    # if len(res) == 0:
-    #     raise Exception("Counter name not valid: name not in counters table.")
 
-    # Check if key is in db
-    query = (
-        db.query(models.Counts)
-        .where(models.Counts.counter == counter_identity)
-        .where(models.Counts.timestamp == time)
-        .where(models.Counts.mode == mode)
+    db_submission = models.Counts(
+        timestamp=time,
+        mode=mode,
+        count_in=count_in,
+        count_out=count_out,
+        counter=counter_identity,
     )
-
-    db_submission = query.first()
-
-    if db_submission:  # If value in db update
-        db_submission.count_in = count_in
-        db_submission.count_out = count_out
-        print("updating")
-    else:  # If value not in db, add it to the db
-        db_submission = models.Counts(
-            timestamp=time,
-            mode=mode,
-            count_in=count_in,
-            count_out=count_out,
-            counter=counter_identity,
-        )
-        db.add(db_submission)
-
+    db.merge(db_submission)
     db.commit()
-    db.refresh(db_submission)
 
-    return db_submission
+    # query = (
+    #     db.query(models.Counts)
+    #     .where(models.Counts.counter == counter_identity)
+    #     .where(models.Counts.timestamp == time)
+    #     .where(models.Counts.mode == mode)
+    # )
+
+    # db_submission = query.first()
+
+    # if db_submission:  # If value in db update
+    #     db_submission.count_in = count_in
+    #     db_submission.count_out = count_out
+    #     print("updating")
+    # else:  # If value not in db, add it to the db
+    #     db_submission = models.Counts(
+    #         timestamp=time,
+    #         mode=mode,
+    #         count_in=count_in,
+    #         count_out=count_out,
+    #         counter=counter_identity,
+    #     )
+    #     db.add(db_submission)
+
+    # db.commit()
+    # db.refresh(db_submission)
+
+    # return db_submission
 
 
 def get_first_timestamp(
