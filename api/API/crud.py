@@ -194,7 +194,7 @@ def get_first_timestamp(
     db: Session,
     identity: int | None = None,
     modes: List[str] | None = None,
-    table: str = "counts_hourly",
+    table: str = "counts",
 ) -> datetime:
     
     time_string = (
