@@ -6,5 +6,5 @@ black==24.8.0
 isort==5.13.2
 SQLAlchemy==2.0.34
 psycopg2==2.9.9
-requests==2.31.0
+requests==2.32.2
 pytest==7.4.4 
