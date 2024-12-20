@@ -2,7 +2,6 @@ import datetime
 
 from pydantic import BaseModel
 
-
 class Counter(BaseModel):
     identity: int
     name: str

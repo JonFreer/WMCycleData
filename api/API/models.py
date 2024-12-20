@@ -31,6 +31,26 @@ class Counts(Base):
     count_in = Column(Integer, nullable=False)
     count_out = Column(Integer, nullable=False)
 
+class Counts_daily(Base):
+    __tablename__ = "counts_daily"
+    counter = Column(Integer, nullable=False, primary_key=True)
+    timestamp = Column(
+        DateTime(timezone=True), nullable=False, index=True, primary_key=True
+    )
+    mode = Column(String, nullable=False, primary_key=True)
+    count_in = Column(Integer, nullable=False)
+    count_out = Column(Integer, nullable=False)
+
+class Counts_weekly(Base):
+    __tablename__ = "counts_weekly"
+    counter = Column(Integer, nullable=False, primary_key=True)
+    timestamp = Column(
+        DateTime(timezone=True), nullable=False, index=True, primary_key=True
+    )
+    mode = Column(String, nullable=False, primary_key=True)
+    count_in = Column(Integer, nullable=False)
+    count_out = Column(Integer, nullable=False)
+
 
 # event.listen(
 #     Counts.__table__,

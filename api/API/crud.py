@@ -47,7 +47,7 @@ def create_counter(
     counter = (
         db.query(models.Counter).where(models.Counter.identity == identity).first()
     )
-
+    
     if counter:
         print("Updating Counter")
         counter.name = name
@@ -74,20 +74,34 @@ def create_counter_summary(
     this_week: int,
     last_week: int,
 ) -> models.CounterSummary:
-    counter_summary = (
-        db.query(models.CounterSummary)
-        .where(models.CounterSummary.identity == identity)
-        .first()
-    )
+    """
+    Creates or updates a CounterSummary record in the database.
+
+    If a CounterSummary with the given identity already exists, it updates the 
+    counts for today, yesterday, this week, and last week. If it does not exist, 
+    it creates a new CounterSummary record with the provided counts.
+
+    Args:
+        db (Session): The database session to use for the operation.
+        identity (int): The unique identifier for the CounterSummary.
+        today (int): The count for today.
+        yesterday (int): The count for yesterday.
+        this_week (int): The count for this week.
+        last_week (int): The count for last week.
+
+    Returns:
+        models.CounterSummary: The created or updated CounterSummary record.
+    """
+    counter_summary = db.query(models.CounterSummary).filter_by(identity=identity).first()
 
     if counter_summary:
-        print("Updating Counter")
+        print("Updating CounterSummary")
         counter_summary.today_count = today
         counter_summary.yesterday_count = yesterday
         counter_summary.this_week_count = this_week
         counter_summary.last_week_count = last_week
     else:
-        print("Creating Counter")
+        print("Creating CounterSummary")
         counter_summary = models.CounterSummary(
             identity=identity,
             today_count=today,
@@ -126,17 +140,32 @@ def add_count(
 def add_count_time_bulk(
     db: Session,
     counts: list
-) -> models.Counts:
+) -> None:
+    """
+    Adds multiple count records to the database in bulk.
 
-    insert_obj = []
-    for count in counts:
-        insert_obj.append(models.Counts(
-            timestamp=count["timestamp"],
+    Args:
+        db (Session): The database session to use for the operation.
+        counts (list): A list of dictionaries, each containing the count data to be added.
+            Each dictionary should have the following structure:
+            {
+                "timestamp": <timestamp_value>,
+                "mode": <mode_value>,
+                "counts": {
+                    "In": <count_in_value>,
+                    "Out": <count_out_value>
+                },
+                "identity": <counter_identity>
+            }
+
+    Returns:
+        None
+    """
+    insert_obj = counts.map(lambda count: models.Counts(timestamp=count["timestamp"],
             mode=count["mode"],
             count_in=count["counts"]["In"],
             count_out=count["counts"]["Out"],
-            counter=count["identity"],
-        ))
+            counter=count["identity"]))
 
     db.bulk_save_objects(insert_obj)
     db.commit()
@@ -149,8 +178,22 @@ def add_count_time(
     time: datetime.datetime,
     mode: str,
 ) -> models.Counts:
-    # # Validate if the counter is valid
-
+    """
+    Adds or updates a count record in the database.
+    This function inserts a new count record into the 'counts' table or updates
+    an existing record if a conflict occurs on the combination of timestamp, 
+    counter, and mode. The count_in and count_out values are updated in case of 
+    a conflict.
+    Args:
+        db (Session): The database session to use for executing the SQL command.
+        counter_identity (int): The identity of the counter.
+        count_in (int): The count of items coming in.
+        count_out (int): The count of items going out.
+        time (datetime.datetime): The timestamp of the count.
+        mode (str): The mode of the count.
+    Returns:
+        models.Counts: The count record that was added or updated.
+    """
     sql_text = """INSERT INTO counts
                     VALUES (:counter, TIMESTAMPTZ :timestamp, :mode, :count_in, :count_out)
                     ON CONFLICT (timestamp, counter, mode) DO UPDATE
@@ -166,76 +209,40 @@ def add_count_time(
         bindparam("count_in", value=count_in),
         bindparam("count_out", value=count_out),
     )
-
     db.execute(sql)
-
-    # db_submission = models.Counts(
-    #     timestamp=time,
-    #     mode=mode,
-    #     count_in=count_in,
-    #     count_out=count_out,
-    #     counter=counter_identity,
-    # )
-    # db.merge(db_submission)
-    # db.commit()
-
-    # query = (
-    #     db.query(models.Counts)
-    #     .where(models.Counts.counter == counter_identity)
-    #     .where(models.Counts.timestamp == time)
-    #     .where(models.Counts.mode == mode)
-    # )
-
-    # db_submission = query.first()
-
-    # if db_submission:  # If value in db update
-    #     db_submission.count_in = count_in
-    #     db_submission.count_out = count_out
-    #     print("updating")
-    # else:  # If value not in db, add it to the db
-    #     db_submission = models.Counts(
-    #         timestamp=time,
-    #         mode=mode,
-    #         count_in=count_in,
-    #         count_out=count_out,
-    #         counter=counter_identity,
-    #     )
-    #     db.add(db_submission)
-
-    # db.commit()
-    # db.refresh(db_submission)
-
-    # return db_submission
-
+    
 
 def get_first_timestamp(
     db: Session,
     identity: int | None = None,
     modes: List[str] | None = None,
     table: str = "counts",
-) -> datetime:
+) -> datetime.datetime:
+    """
+    Retrieves the first timestamp from the specified table based on the given criteria.
+    Args:
+        db (Session): The database session to use for executing the query.
+        identity (int | None, optional): The identity value to filter the results by. Defaults to None.
+        modes (List[str] | None, optional): A list of modes to filter the results by. Defaults to None.
+        table (str, optional): The name of the table to query. Defaults to "counts_hourly".
+    Returns:
+        datetime: The first timestamp that matches the given criteria.
+    """
+    table_model = getattr(models, table.capitalize())
+    query = db.query(table_model.timestamp).order_by(table_model.timestamp.asc())
+
+    if identity is not None:
+        query = query.filter(table_model.counter == identity)
+
+    if modes is not None:
+        query = query.filter(table_model.mode.in_(modes))
+
+    result = query.first()
+    if result:
+        return result[0]
+    else:
+        raise ValueError("No timestamp found for the given criteria.")
     
-    time_string = (
-            """SELECT first(timestamp,timestamp) FROM {} WHERE """).format(table)
-
-    if identity != None:
-        time_string = time_string + "counter = :identity AND "
-
-    if modes != None:
-        time_string = (
-            time_string
-            + "mode IN ({})".format(",".join("'{0}'".format(x) for x in modes))
-        )
-
-    sql = text(time_string)
-
-    if identity != None:
-        sql = sql.bindparams(
-            bindparam("identity", value=identity),
-        )
-
-    return db.execute(sql).all()[0][0]
-
 def read_counts(
     db: Session,
     limit_offset: Tuple[int, int],
@@ -248,7 +255,7 @@ def read_counts(
 ) -> List[models.Counts]:
     limit, offset = limit_offset
 
-    if table == None:
+    if table is None:
         if "day" in time_interval or "month" in time_interval or "year" in time_interval:
             table = "counts_daily"
         elif "week" in time_interval:
@@ -256,61 +263,51 @@ def read_counts(
         else:
             table = "counts"
 
-    print("Reading Counts from table:", table,time_interval)
+    print("Reading Counts from table:", table, time_interval)
 
-    if start_time == None:
-        start_time = get_first_timestamp(db,identity,modes,table).timestamp()
-   
-    #If start time is None, and we want gapfill, then we need to first query to find the first item and then gapfill from there
+    if start_time is None:
+        start_time = get_first_timestamp(db, identity, modes, table).timestamp()
 
-    sql_string = (
-        """
-  
-        SELECT time_bucket_gapfill(:timeInterval , timestamp) as timestamp, 
-               mode, counter ,
-               CASE WHEN sum(count_in) IS NULL THEN 0 ELSE sum(count_in) END AS count_in,
-               CASE WHEN sum(count_out) IS NULL THEN 0 ELSE sum(count_out) END AS count_out
-               FROM {} WHERE """.format(table)
-    )
+    sql_string = f"""
+        SELECT time_bucket_gapfill(:time_interval, timestamp) as timestamp, 
+                mode, counter,
+                COALESCE(sum(count_in), 0) AS count_in,
+                COALESCE(sum(count_out), 0) AS count_out
+        FROM {table}
+        WHERE """
 
-    if identity != None:
-        sql_string = sql_string + "counter = :identity AND "
+    if identity is not None:
+        sql_string += "counter = :identity AND "
 
-    if modes != None:
-        sql_string = (
-            sql_string
-            + "mode IN ("
-            + ",".join("'{0}'".format(x) for x in modes)
-            + ") AND "
-        )
+    if modes is not None:
+        modes_str = ",".join(f"'{mode}'" for mode in modes)
+        sql_string += f"mode IN ({modes_str}) AND "
 
-    sql_string = (
-        sql_string
-        + """  timestamp > TIMESTAMPTZ :start_time AND timestamp <= TIMESTAMPTZ :end_time
-               GROUP BY 1,2,3
-               ORDER BY timestamp DESC""" #timestamp > TIMESTAMPTZ :start_time AND
-    )
+    sql_string += """
+        timestamp > TIMESTAMPTZ :start_time AND timestamp <= TIMESTAMPTZ :end_time
+        GROUP BY 1, 2, 3
+        ORDER BY timestamp DESC
+        LIMIT :limit OFFSET :offset
+    """
 
     sql = text(sql_string)
 
-    if end_time == None:
+    if end_time is None:
         end_time = datetime.datetime.now().timestamp()
-    
+
     sql = sql.bindparams(
-        bindparam("timeInterval", value=time_interval),
+        bindparam("time_interval", value=time_interval),
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
         bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
-        # bindparam("table", value=table),
+        bindparam("limit", value=limit),
+        bindparam("offset", value=offset),
     )
 
-    if identity != None:
-        sql = sql.bindparams(
-            bindparam("identity", value=identity),
-        )
+    if identity is not None:
+        sql = sql.bindparams(bindparam("identity", value=identity))
 
     results = db.execute(sql).all()
     return results
-
 
 def read_average(
     db: Session,
@@ -320,37 +317,49 @@ def read_average(
     modes: List[str] | None = None,
     table: str = "counts_daily",
 ) -> List[schemas.WeekCounts]:
-    
-    where_string = ""
+    """
+    Reads the average counts from the database within a specified time range and optional filters.
 
-    if identity != None:
-        where_string =  "AND counter = :identity "
+    Args:
+        db (Session): The database session to use for the query.
+        identity (int | None, optional): The identity of the counter to filter by. Defaults to None.
+        start_time (int | None, optional): The start time (timestamp) for the query. Defaults to None.
+        end_time (int | None, optional): The end time (timestamp) for the query. Defaults to None.
+        modes (List[str] | None, optional): A list of modes to filter by. Defaults to None.
+        table (str, optional): The name of the table to query from. Defaults to "counts_daily".
 
-    if modes != None:
-        where_string = (where_string + " AND mode IN ({})").format( ",".join("'{0}'".format(x) for x in modes))
-      
+    Returns:
+        List[schemas.WeekCounts]: A list of average counts grouped by day of the week, counter, and mode.
+    """
+    where_clauses = ["timestamp > TIMESTAMPTZ :start_time", "timestamp <= TIMESTAMPTZ :end_time"]
 
-    sql = ("""
-            SELECT
-                EXTRACT(ISODOW FROM timestamp) AS day_of_week, 
-                counter as identity,
-                mode,
-                AVG(count_in) AS count_in,
-                AVG(count_out) AS count_out
-            FROM
-                counts_daily
-            WHERE timestamp > TIMESTAMPTZ :start_time
-               AND timestamp <= TIMESTAMPTZ :end_time {}
-            GROUP BY
-                counter,mode,day_of_week
-            ORDER BY
-                day_of_week;""").format(where_string)
+    if identity is not None:
+        where_clauses.append("counter = :identity")
 
-    sql = text(sql)
+    if modes is not None:
+        where_clauses.append("mode IN ({})".format(",".join("'{0}'".format(x) for x in modes)))
 
-    if end_time == None:
+    where_string = " AND ".join(where_clauses)
+
+    sql = text(f"""
+        SELECT
+            EXTRACT(ISODOW FROM timestamp) AS day_of_week, 
+            counter as identity,
+            mode,
+            AVG(count_in) AS count_in,
+            AVG(count_out) AS count_out
+        FROM
+            {table}
+        WHERE {where_string}
+        GROUP BY
+            counter, mode, day_of_week
+        ORDER BY
+            day_of_week;
+    """)
+
+    if end_time is None:
         end_time = datetime.datetime.now().timestamp()
-    if start_time == None:
+    if start_time is None:
         start_time = 0
 
     sql = sql.bindparams(
@@ -358,5 +367,6 @@ def read_average(
         bindparam("start_time", value=datetime.datetime.fromtimestamp(start_time)),
         bindparam("end_time", value=datetime.datetime.fromtimestamp(end_time)),
     )
+
     results = db.execute(sql).all()
     return results

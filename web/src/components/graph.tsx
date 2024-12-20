@@ -6,17 +6,17 @@ import apexchart from "apexcharts";
 
 function Graph({
   identity,
-  time_interval,
+  timeInterval,
   style,
-  default_start_date,
-  default_end_date,
+  defaultStartDate,
+  defaultEndDate,
   type,
 }: {
   identity: number;
-  time_interval: string;
+  timeInterval: string;
   style: "bar" | "area";
-  default_start_date: Date | null;
-  default_end_date: Date | null;
+  defaultStartDate: Date | null;
+  defaultEndDate: Date | null;
   type: "day" | "week" | "month";
 }) {
 
@@ -130,7 +130,7 @@ function Graph({
 
     let query =
       "/api/counts/?time_interval=" +
-      encodeURIComponent(time_interval) +
+      encodeURIComponent(timeInterval) +
       "&modes=cyclist&modes=pedestrian&modes=escooter&modes=car&modes=bus" +
       "&identity=" + identity;
 
@@ -155,13 +155,13 @@ function Graph({
   }
 
   useEffect(() => {
-    if (default_start_date !== null) {
-      getCounts(default_start_date.getTime() - 604800000);
-      min.current = default_start_date.getTime() - 604800000;
+    if (defaultStartDate !== null) {
+      getCounts(defaultStartDate.getTime() - 604800000);
+      min.current = defaultStartDate.getTime() - 604800000;
     } else {
       getCounts();
     }
-  }, [style, time_interval, identity, default_start_date, default_end_date]);
+  }, [style, timeInterval, identity, defaultStartDate, defaultEndDate]);
 
   const options: ApexOptions = {
     chart: {
@@ -252,14 +252,12 @@ function Graph({
 
   if (options.xaxis) {
     // options.xaxis.min = min;
-    if (default_start_date !== null) {
-      options.xaxis.min = default_start_date.getTime();
-      // setMax(default_end_date.getTime());
+    if (defaultStartDate !== null) {
+      options.xaxis.min = defaultStartDate.getTime();
     }
     // options.xaxis.max = max;
-    if (default_end_date !== null) {
-      options.xaxis.max = default_end_date.getTime();
-      // setMax(default_end_date.getTime());
+    if (defaultEndDate !== null) {
+      options.xaxis.max = defaultEndDate.getTime();
     }
   }
 

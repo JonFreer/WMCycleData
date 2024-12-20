@@ -1,7 +1,5 @@
 import datetime
-
 import requests
-
 
 class Vivacity:
     # Call and return the json from the Vivacity API

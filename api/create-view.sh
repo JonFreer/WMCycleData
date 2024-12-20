@@ -1,6 +1,9 @@
 INSERT INTO counts(counter,timestamp,mode,count_in,count_out) SELECT counter,timestamp,mode,count_in,count_out FROM counts_hourly;
 
-
+#Convert counts into a hypertable
+SELECT create_hypertable('counts', by_range('timestamp'),migrate_data=>True);
+ 
+#Create counts_daily and counts_weekly
 CREATE MATERIALIZED VIEW counts_daily
 WITH (timescaledb.continuous) AS
 SELECT
@@ -21,6 +24,7 @@ SELECT
 FROM counts_daily
 GROUP BY 1,2,3;
 
+#Create a policy for counts_daily and counts_weekly
 SELECT add_continuous_aggregate_policy('counts_daily',
   start_offset => INTERVAL '2 days',
   end_offset => NULL,
