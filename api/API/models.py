@@ -52,6 +52,11 @@ class Counts_weekly(Base):
     count_out = Column(Integer, nullable=False)
 
 
+# Mapped so they can be queried, but db_init builds them as TimescaleDB
+# continuous aggregates, so create_all() must not make plain tables of them.
+CONTINUOUS_AGGREGATES = (Counts_daily.__table__, Counts_weekly.__table__)
+
+
 # event.listen(
 #     Counts.__table__,
 #     "after_create",
