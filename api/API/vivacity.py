@@ -6,13 +6,13 @@ class Vivacity:
     def get_results(api_key, start_time, end_time, identity):
         if identity == None:
             response = requests.get(
-                "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true".format(
+                "https://tfwm.opendata.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true".format(
                     api_key, start_time, end_time
                 )
             )
         else:
             response = requests.get(
-                    "https://tfwm.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
+                    "https://tfwm.opendata.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
                     api_key, start_time, end_time, identity
                 )
             )
