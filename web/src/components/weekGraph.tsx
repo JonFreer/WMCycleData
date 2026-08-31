@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import { Count } from "../types/types";
 import ReactApexChart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
 import apexchart from "apexcharts";
+import type { ApexOptions, ApexAxisChartSeries } from "apexcharts";
 import styles from "../css_modules/dashboard.module.css";
 
 function WeekGraph({

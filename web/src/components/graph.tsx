@@ -1,8 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Count } from "../types/types";
 import ReactApexChart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
 import apexchart from "apexcharts";
+import type {
+  ApexOptions,
+  ApexAxisChartSeries,
+  ApexXAxis,
+} from "apexcharts";
 
 function Graph({
   identity,
@@ -185,7 +189,11 @@ function Graph({
             hidden_state.current[key] = !hidden_state.current[key];
           }
         },
-        zoomed: function (chartContext, { xaxis, yaxis }) {
+        zoomed: function (chartContext, options) {
+          const xaxis = options?.xaxis;
+          if (xaxis === undefined) {
+            return;
+          }
           if (xaxis.min < min.current) {
             min.current = xaxis.min - 100000000;
             getCounts(min.current, xaxis.max);
