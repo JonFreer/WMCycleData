@@ -46,7 +46,13 @@ def read_counts(
         ),
     ] = None,
     offset: int = 0,
-    limit: int = 25,
+    limit: Annotated[
+        int | None,
+        Query(
+            title="Limit",
+            description="Optional: Number of count values returned. Defaults to all.",
+        ),
+    ] = None,
     time_interval: str = "1 hour",
     modes: List[str] = Query(
         None,

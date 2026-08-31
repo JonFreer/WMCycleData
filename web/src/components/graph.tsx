@@ -24,7 +24,7 @@ function Graph({
   type: "day" | "week" | "month";
 }) {
 
-  const min = useRef<number>(2 ^ 53);
+  const min = useRef<number>(Number.MAX_SAFE_INTEGER);
   const hidden_state = useRef<any>({
     Cyclists: false,
     "E-Scooter": true,
@@ -32,7 +32,6 @@ function Graph({
     Cars: true,
     Bus: true,
   });
-  // const [min, setMin] = useState<number>(2^53);
 
   // By defualt the min and max should be set to the props
 
