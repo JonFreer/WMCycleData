@@ -212,21 +212,36 @@ def add_count_time(
     db.execute(sql)
     
 
+def get_job_state(
+    db: Session, name: str, seed_last_run: datetime.datetime
+) -> models.JobState:
+    """Return the scheduler's state for a job, seeding it on first sight."""
+    state = db.query(models.JobState).where(models.JobState.name == name).first()
+
+    if state is None:
+        state = models.JobState(name=name, last_run=seed_last_run, cursor=0)
+        db.add(state)
+        db.commit()
+
+    return state
+
+
 def get_first_timestamp(
     db: Session,
     identity: int | None = None,
     modes: List[str] | None = None,
     table: str = "counts",
-) -> datetime.datetime:
+) -> datetime.datetime | None:
     """
     Retrieves the first timestamp from the specified table based on the given criteria.
     Args:
         db (Session): The database session to use for executing the query.
         identity (int | None, optional): The identity value to filter the results by. Defaults to None.
         modes (List[str] | None, optional): A list of modes to filter the results by. Defaults to None.
-        table (str, optional): The name of the table to query. Defaults to "counts_hourly".
+        table (str, optional): The name of the table to query. Defaults to "counts".
     Returns:
-        datetime: The first timestamp that matches the given criteria.
+        datetime | None: The first timestamp matching the given criteria, or
+            None when nothing matches.
     """
     table_model = getattr(models, table.capitalize())
     query = db.query(table_model.timestamp).order_by(table_model.timestamp.asc())
@@ -238,10 +253,7 @@ def get_first_timestamp(
         query = query.filter(table_model.mode.in_(modes))
 
     result = query.first()
-    if result:
-        return result[0]
-    else:
-        raise ValueError("No timestamp found for the given criteria.")
+    return result[0] if result else None
     
 def read_counts(
     db: Session,
@@ -266,7 +278,14 @@ def read_counts(
     print("Reading Counts from table:", table, time_interval)
 
     if start_time is None:
-        start_time = get_first_timestamp(db, identity, modes, table).timestamp()
+        first_timestamp = get_first_timestamp(db, identity, modes, table)
+
+        # Nothing recorded for this counter and mode combination. That is an
+        # empty result, not a failure, and there is no range to gapfill over.
+        if first_timestamp is None:
+            return []
+
+        start_time = first_timestamp.timestamp()
 
     sql_string = f"""
         SELECT time_bucket_gapfill(:time_interval, timestamp) as timestamp, 

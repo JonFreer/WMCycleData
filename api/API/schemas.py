@@ -48,3 +48,13 @@ class Count(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class Job(BaseModel):
+    id: str
+    name: str
+    status: str
+    queued_at: datetime.datetime
+    started_at: datetime.datetime | None
+    finished_at: datetime.datetime | None
+    detail: dict | str | None

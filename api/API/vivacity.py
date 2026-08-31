@@ -1,6 +1,10 @@
 import datetime
 import requests
 
+# The loads run on a single worker thread, so a request that never returns
+# would wedge every load queued behind it.
+REQUEST_TIMEOUT = 600
+
 class Vivacity:
     # Call and return the json from the Vivacity API
     def get_results(api_key, start_time, end_time, identity):
@@ -8,13 +12,15 @@ class Vivacity:
             response = requests.get(
                 "https://tfwm.opendata.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true".format(
                     api_key, start_time, end_time
-                )
+                ),
+                timeout=REQUEST_TIMEOUT,
             )
         else:
             response = requests.get(
                     "https://tfwm.opendata.onl/vivacity_counts.json?ApiKey={}&earliest={}&latest={}&period=hour&EndPeriod=hour&meta=true&identity={}".format(
                     api_key, start_time, end_time, identity
-                )
+                ),
+                timeout=REQUEST_TIMEOUT,
             )
         response.raise_for_status()
         return response.json()

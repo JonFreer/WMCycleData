@@ -13,6 +13,7 @@ CMD pytest
 
 FROM main AS dev
 ENV PYTHONPATH=$PWD
+ENV RELOAD=true
 CMD PORT=80 sh ./prestart.sh
 
 FROM main AS prod

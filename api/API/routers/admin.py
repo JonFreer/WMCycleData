@@ -1,4 +1,3 @@
-import datetime
 from typing import Annotated
 
 import requests
@@ -7,11 +6,9 @@ from fastapi.responses import Response
 from fastapi.security.api_key import APIKey
 from sqlalchemy.orm import Session
 
-from .. import config, crud, schemas, vivacity
+from .. import crud, loader, schemas, tasks
 from ..dependencies import get_db
 from . import auth
-
-DAY_SECONDS = 86400
 
 router = APIRouter()
 
@@ -106,33 +103,19 @@ def load_dummy_counts(
 
     crud.add_count_time_bulk(counts)
 
-    # for count in counts:
-    #     # print(counter)
-    #     try:
-    #         crud.add_count_time(
-    #             db,
-    #             count["counter"],
-    #             count["count_in"],
-    #             count["count_out"],
-    #             count["timestamp"],
-    #             count["mode"],
-    #         )
-    #     except:
-    #         pass
-
     return Response(status_code=status.HTTP_201_CREATED)
 
 
 # Request Vivacity counts and add them to the database
 @router.post(
     "/load_vivacity/",
-    status_code=201,
+    status_code=202,
+    response_model=schemas.Job,
     tags=["admin"],
-    summary="Request Vivacity counts and add them to the database",
-    description="Iterate through each of the counters stored in the counters table. Request the counts for each of the counters. Store the counts in the counts table.",
+    summary="Queue a Vivacity load",
+    description="Queue a background job that requests the counts for each counter in the counters table, stores them in the counts table and rebuilds the cached summaries. Returns immediately: poll /jobs/{job_id} for the outcome.",
 )
 def load_vivacity(
-    response: Response,
     api_key: Annotated[APIKey, Depends(auth.get_api_key)],
     identity: Annotated[
         int | None,
@@ -143,88 +126,34 @@ def load_vivacity(
     ] = None,
     delta_t: int = (4 * 60 * 60),
     end_t: int | None = None,
-    db: Session = Depends(get_db),
 ):
-    counters = crud.read_counters(db, [None, 0])
-
-    results, counters_vivacity = vivacity.Vivacity.get_counts(
-        config.VivacityKey, delta_t, identity, end_t
+    return tasks.submit(
+        "load_vivacity",
+        loader.load_vivacity_counts,
+        delta_t=delta_t,
+        identity=identity,
+        end_t=end_t,
     )
 
-    # Add any new counters to the counters table
 
-    counters_identitys = map(lambda x: x.identity, counters)
-    new_counters = set(counters_vivacity).difference(set(counters_identitys))
+@router.get(
+    "/jobs/",
+    response_model=list[schemas.Job],
+    tags=["admin"],
+    summary="Recently queued background jobs",
+)
+def read_jobs(api_key: Annotated[APIKey, Depends(auth.get_api_key)]):
+    return tasks.recent()
 
-    print("counters_identity", new_counters)
 
-    for counter_id in new_counters:
-        crud.create_counter(
-            db,
-            counter_id,
-            "",
-            counters_vivacity[counter_id].split(",")[0],
-            counters_vivacity[counter_id].split(",")[1],
-            "",
-        )
-
-    # crud.add_count_time_bulk(db=db,counts=results)
-    for count in results:
-        print(count)
-        
-        crud.add_count_time(
-            db,
-            count["identity"],
-            count["counts"]["In"],
-            count["counts"]["Out"],
-            count["timestamp"],
-            count["mode"],
-        )
-
-    # Update cached summary
-    # Iterate through each counter and calculate daily and weekly summaries
-    counters = crud.read_counters(db, (None, 0))
-
-    for counter in counters:
-        today = 0
-        yesterday = 0
-        week_count = 0
-        last_week_count = 0
-
-        today_res = crud.read_counts(
-            db,
-            (None, 0),
-            time_interval="1 day",
-            identity=counter.identity,
-            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 2),
-            table="counts",
-        )
-        week_res = crud.read_counts(
-            db,
-            (None, 0),
-            time_interval="1 week",
-            identity=counter.identity,
-            start_time=int(datetime.datetime.now().timestamp() - DAY_SECONDS * 14),
-            table="counts",
-        )
-
-        today_res = list(filter(lambda x: (x.mode == "cyclist"), today_res))
-        week_res = list(filter(lambda x: (x.mode == "cyclist"), week_res))
-
-        if len(today_res) > 0:
-            today = today_res[0].count_in + today_res[0].count_out
-
-        if len(today_res) > 1:
-            yesterday = today_res[1].count_in + today_res[1].count_out
-
-        if len(week_res) > 0:
-            week_count = week_res[0].count_in + week_res[0].count_out
-
-        if len(week_res) > 1:
-            last_week_count = week_res[1].count_in + week_res[1].count_out
-
-        crud.create_counter_summary(
-            db, counter.identity, today, yesterday, week_count, last_week_count
-        )
-
-    return Response(status_code=status.HTTP_201_CREATED)
+@router.get(
+    "/jobs/{job_id}",
+    response_model=schemas.Job,
+    tags=["admin"],
+    summary="Status of a single background job",
+)
+def read_job(job_id: str, api_key: Annotated[APIKey, Depends(auth.get_api_key)]):
+    job = tasks.get(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="No such job")
+    return job

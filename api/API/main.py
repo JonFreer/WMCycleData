@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from starlette.middleware.sessions import SessionMiddleware
 
-from . import config, models
+from . import config, models, scheduler
 from .db import engine
 from .db_init import init_timescale
 from .routers import admin, counts
@@ -15,6 +15,9 @@ models.Base.metadata.create_all(
     ],
 )
 init_timescale(engine)
+
+if config.SchedulerEnabled:
+    scheduler.start()
 
 app = FastAPI(root_path="/api", title="WMCycleCounter")
 app.add_middleware(SessionMiddleware, secret_key=config.SessionSecret)

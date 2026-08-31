@@ -9,3 +9,5 @@ SessionSecret = os.environ["SESSION_SECRET"]
 ExternalAPIToken = os.environ["EXTERNAL_API_TOKEN"]
 
 VivacityKey = os.environ["VIVACITY_KEY"]
+
+SchedulerEnabled = os.environ.get("SCHEDULER_ENABLED", "true").lower() != "false"

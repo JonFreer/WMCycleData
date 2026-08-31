@@ -52,6 +52,15 @@ class Counts_weekly(Base):
     count_out = Column(Integer, nullable=False)
 
 
+class JobState(Base):
+    __tablename__ = "job_state"
+    name = Column(String, primary_key=True)
+    # When the scheduler last queued this job, so a restart does not reset the
+    # clock, and how far back_load has walked into the archive.
+    last_run = Column(DateTime(timezone=True), nullable=False)
+    cursor = Column(Integer, nullable=False, default=0)
+
+
 # Mapped so they can be queried, but db_init builds them as TimescaleDB
 # continuous aggregates, so create_all() must not make plain tables of them.
 CONTINUOUS_AGGREGATES = (Counts_daily.__table__, Counts_weekly.__table__)
